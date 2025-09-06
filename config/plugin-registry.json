@@ -1,0 +1,632 @@
+{
+  "version": "1.0.0",
+  "lastUpdate": "2025-09-03T00:00:00Z",
+  "categories": [
+    {
+      "id": "dashboard",
+      "name": "Dashboard & Widgets",
+      "description": "Dashboard components and customizable widgets",
+      "icon": "dashboard",
+      "order": 1
+    },
+    {
+      "id": "user-management",
+      "name": "User Management",
+      "description": "User authentication, authorization, and management tools",
+      "icon": "users",
+      "order": 2
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics & Reports",
+      "description": "Data visualization, charts, and reporting tools",
+      "icon": "bar-chart",
+      "order": 3
+    },
+    {
+      "id": "settings",
+      "name": "Settings & Configuration",
+      "description": "Application settings and configuration management",
+      "icon": "settings",
+      "order": 4
+    },
+    {
+      "id": "file-management",
+      "name": "File Management",
+      "description": "File upload, management, and storage solutions",
+      "icon": "folder",
+      "order": 5
+    },
+    {
+      "id": "communication",
+      "name": "Communication",
+      "description": "Chat, notifications, and messaging systems",
+      "icon": "message-circle",
+      "order": 6
+    },
+    {
+      "id": "productivity",
+      "name": "Productivity",
+      "description": "Task management, calendars, and productivity tools",
+      "icon": "clock",
+      "order": 7
+    },
+    {
+      "id": "integration",
+      "name": "Integrations",
+      "description": "Third-party integrations and API connectors",
+      "icon": "link",
+      "order": 8
+    }
+  ],
+  "plugins": [
+    {
+      "id": "dashboard-plugin",
+      "name": "Dashboard Plugin",
+      "version": "1.0.0",
+      "description": "Main dashboard with customizable widgets and metrics overview",
+      "author": "Shell Platform Team",
+      "category": "dashboard",
+      "tags": ["dashboard", "widgets", "metrics", "overview"],
+      "icon": "dashboard",
+      "remoteUrl": "http://localhost:3001/remoteEntry.js",
+      "exposedModule": "./DashboardPlugin",
+      "permissions": [
+        "read:dashboard",
+        "write:dashboard",
+        "read:metrics"
+      ],
+      "dependencies": [
+        {
+          "name": "react",
+          "version": "^18.0.0"
+        },
+        {
+          "name": "@shell-platform/shared-components",
+          "version": "^1.0.0"
+        }
+      ],
+      "configuration": {
+        "routes": [
+          {
+            "path": "/dashboard",
+            "component": "Dashboard",
+            "exact": true,
+            "title": "Dashboard",
+            "protected": true,
+            "permissions": ["read:dashboard"]
+          }
+        ],
+        "menuItems": [
+          {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "icon": "dashboard",
+            "path": "/dashboard",
+            "order": 1,
+            "permissions": ["read:dashboard"]
+          }
+        ],
+        "settings": [
+          {
+            "key": "defaultView",
+            "label": "Default View",
+            "type": "select",
+            "defaultValue": "overview",
+            "options": [
+              {"label": "Overview", "value": "overview"},
+              {"label": "Detailed", "value": "detailed"},
+              {"label": "Compact", "value": "compact"}
+            ],
+            "required": true,
+            "description": "Default dashboard view mode"
+          },
+          {
+            "key": "refreshInterval",
+            "label": "Refresh Interval (seconds)",
+            "type": "number",
+            "defaultValue": 30,
+            "required": false,
+            "description": "Auto-refresh interval for dashboard data"
+          }
+        ],
+        "features": ["widgets", "real-time-updates", "customization"]
+      },
+      "status": "active",
+      "metadata": {
+        "installDate": "2025-09-03T00:00:00Z",
+        "size": 245760,
+        "hash": "sha256:abc123def456"
+      }
+    },
+    {
+      "id": "user-management-plugin",
+      "name": "User Management Plugin",
+      "version": "1.0.0",
+      "description": "Complete user management system with CRUD operations, roles, and permissions",
+      "author": "Shell Platform Team",
+      "category": "user-management",
+      "tags": ["users", "roles", "permissions", "authentication"],
+      "icon": "users",
+      "remoteUrl": "http://localhost:3002/remoteEntry.js",
+      "exposedModule": "./UserManagementPlugin",
+      "permissions": [
+        "read:users",
+        "write:users",
+        "delete:users",
+        "manage:roles",
+        "manage:permissions"
+      ],
+      "dependencies": [
+        {
+          "name": "react",
+          "version": "^18.0.0"
+        },
+        {
+          "name": "@shell-platform/shared-components",
+          "version": "^1.0.0"
+        }
+      ],
+      "configuration": {
+        "routes": [
+          {
+            "path": "/users",
+            "component": "UserList",
+            "exact": true,
+            "title": "Users",
+            "protected": true,
+            "permissions": ["read:users"]
+          },
+          {
+            "path": "/users/create",
+            "component": "UserForm",
+            "exact": true,
+            "title": "Create User",
+            "protected": true,
+            "permissions": ["write:users"]
+          },
+          {
+            "path": "/users/:id",
+            "component": "UserDetail",
+            "exact": true,
+            "title": "User Details",
+            "protected": true,
+            "permissions": ["read:users"]
+          },
+          {
+            "path": "/roles",
+            "component": "RoleManagement",
+            "exact": true,
+            "title": "Role Management",
+            "protected": true,
+            "permissions": ["manage:roles"]
+          }
+        ],
+        "menuItems": [
+          {
+            "id": "user-management",
+            "label": "User Management",
+            "icon": "users",
+            "order": 2,
+            "permissions": ["read:users"],
+            "children": [
+              {
+                "id": "users",
+                "label": "Users",
+                "path": "/users",
+                "order": 1,
+                "permissions": ["read:users"]
+              },
+              {
+                "id": "roles",
+                "label": "Roles",
+                "path": "/roles",
+                "order": 2,
+                "permissions": ["manage:roles"]
+              }
+            ]
+          }
+        ],
+        "settings": [
+          {
+            "key": "defaultRole",
+            "label": "Default User Role",
+            "type": "select",
+            "defaultValue": "user",
+            "options": [
+              {"label": "User", "value": "user"},
+              {"label": "Admin", "value": "admin"},
+              {"label": "Guest", "value": "guest"}
+            ],
+            "required": true,
+            "description": "Default role assigned to new users"
+          },
+          {
+            "key": "enableSelfRegistration",
+            "label": "Enable Self Registration",
+            "type": "boolean",
+            "defaultValue": false,
+            "description": "Allow users to register themselves"
+          }
+        ],
+        "features": ["user-crud", "role-management", "permissions", "bulk-operations"]
+      },
+      "status": "active",
+      "metadata": {
+        "installDate": "2025-09-03T00:00:00Z",
+        "size": 512000,
+        "hash": "sha256:def456ghi789"
+      }
+    },
+    {
+      "id": "analytics-plugin",
+      "name": "Analytics Plugin",
+      "version": "1.0.0",
+      "description": "Advanced analytics with interactive charts, reports, and data visualization",
+      "author": "Shell Platform Team",
+      "category": "analytics",
+      "tags": ["analytics", "charts", "reports", "visualization", "metrics"],
+      "icon": "bar-chart",
+      "remoteUrl": "http://localhost:3003/remoteEntry.js",
+      "exposedModule": "./AnalyticsPlugin",
+      "permissions": [
+        "read:analytics",
+        "write:analytics",
+        "read:reports",
+        "generate:reports"
+      ],
+      "dependencies": [
+        {
+          "name": "react",
+          "version": "^18.0.0"
+        },
+        {
+          "name": "recharts",
+          "version": "^2.8.0"
+        },
+        {
+          "name": "@shell-platform/shared-components",
+          "version": "^1.0.0"
+        }
+      ],
+      "configuration": {
+        "routes": [
+          {
+            "path": "/analytics",
+            "component": "AnalyticsDashboard",
+            "exact": true,
+            "title": "Analytics",
+            "protected": true,
+            "permissions": ["read:analytics"]
+          },
+          {
+            "path": "/analytics/reports",
+            "component": "ReportsPage",
+            "exact": true,
+            "title": "Reports",
+            "protected": true,
+            "permissions": ["read:reports"]
+          },
+          {
+            "path": "/analytics/custom",
+            "component": "CustomAnalytics",
+            "exact": true,
+            "title": "Custom Analytics",
+            "protected": true,
+            "permissions": ["write:analytics"]
+          }
+        ],
+        "menuItems": [
+          {
+            "id": "analytics",
+            "label": "Analytics",
+            "icon": "bar-chart",
+            "order": 3,
+            "permissions": ["read:analytics"],
+            "children": [
+              {
+                "id": "analytics-dashboard",
+                "label": "Dashboard",
+                "path": "/analytics",
+                "order": 1,
+                "permissions": ["read:analytics"]
+              },
+              {
+                "id": "reports",
+                "label": "Reports",
+                "path": "/analytics/reports",
+                "order": 2,
+                "permissions": ["read:reports"]
+              },
+              {
+                "id": "custom-analytics",
+                "label": "Custom Analytics",
+                "path": "/analytics/custom",
+                "order": 3,
+                "permissions": ["write:analytics"]
+              }
+            ]
+          }
+        ],
+        "settings": [
+          {
+            "key": "defaultTimeRange",
+            "label": "Default Time Range",
+            "type": "select",
+            "defaultValue": "7d",
+            "options": [
+              {"label": "Last 24 Hours", "value": "1d"},
+              {"label": "Last 7 Days", "value": "7d"},
+              {"label": "Last 30 Days", "value": "30d"},
+              {"label": "Last 90 Days", "value": "90d"}
+            ],
+            "required": true,
+            "description": "Default time range for analytics data"
+          },
+          {
+            "key": "enableRealTimeUpdates",
+            "label": "Enable Real-time Updates",
+            "type": "boolean",
+            "defaultValue": true,
+            "description": "Enable real-time data updates in charts"
+          }
+        ],
+        "features": ["interactive-charts", "custom-reports", "real-time-data", "export-data"]
+      },
+      "status": "active",
+      "metadata": {
+        "installDate": "2025-09-03T00:00:00Z",
+        "size": 768000,
+        "hash": "sha256:ghi789jkl012"
+      }
+    },
+    {
+      "id": "settings-plugin",
+      "name": "Settings Plugin",
+      "version": "1.0.0",
+      "description": "Comprehensive application settings and configuration management",
+      "author": "Shell Platform Team",
+      "category": "settings",
+      "tags": ["settings", "configuration", "preferences", "admin"],
+      "icon": "settings",
+      "remoteUrl": "http://localhost:3004/remoteEntry.js",
+      "exposedModule": "./SettingsPlugin",
+      "permissions": [
+        "read:settings",
+        "write:settings",
+        "admin:settings"
+      ],
+      "dependencies": [
+        {
+          "name": "react",
+          "version": "^18.0.0"
+        },
+        {
+          "name": "@shell-platform/shared-components",
+          "version": "^1.0.0"
+        }
+      ],
+      "configuration": {
+        "routes": [
+          {
+            "path": "/settings",
+            "component": "SettingsPage",
+            "exact": true,
+            "title": "Settings",
+            "protected": true,
+            "permissions": ["read:settings"]
+          },
+          {
+            "path": "/settings/general",
+            "component": "GeneralSettings",
+            "exact": true,
+            "title": "General Settings",
+            "protected": true,
+            "permissions": ["read:settings"]
+          },
+          {
+            "path": "/settings/security",
+            "component": "SecuritySettings",
+            "exact": true,
+            "title": "Security Settings",
+            "protected": true,
+            "permissions": ["admin:settings"]
+          },
+          {
+            "path": "/settings/plugins",
+            "component": "PluginSettings",
+            "exact": true,
+            "title": "Plugin Settings",
+            "protected": true,
+            "permissions": ["admin:settings"]
+          }
+        ],
+        "menuItems": [
+          {
+            "id": "settings",
+            "label": "Settings",
+            "icon": "settings",
+            "order": 4,
+            "permissions": ["read:settings"],
+            "children": [
+              {
+                "id": "general-settings",
+                "label": "General",
+                "path": "/settings/general",
+                "order": 1,
+                "permissions": ["read:settings"]
+              },
+              {
+                "id": "security-settings",
+                "label": "Security",
+                "path": "/settings/security",
+                "order": 2,
+                "permissions": ["admin:settings"]
+              },
+              {
+                "id": "plugin-settings",
+                "label": "Plugins",
+                "path": "/settings/plugins",
+                "order": 3,
+                "permissions": ["admin:settings"]
+              }
+            ]
+          }
+        ],
+        "settings": [
+          {
+            "key": "appName",
+            "label": "Application Name",
+            "type": "string",
+            "defaultValue": "Shell Platform",
+            "required": true,
+            "description": "Name of the application"
+          },
+          {
+            "key": "theme",
+            "label": "Theme",
+            "type": "select",
+            "defaultValue": "light",
+            "options": [
+              {"label": "Light", "value": "light"},
+              {"label": "Dark", "value": "dark"},
+              {"label": "Auto", "value": "auto"}
+            ],
+            "required": true,
+            "description": "Application theme"
+          }
+        ],
+        "features": ["theme-management", "plugin-configuration", "security-settings", "backup-restore"]
+      },
+      "status": "active",
+      "metadata": {
+        "installDate": "2025-09-03T00:00:00Z",
+        "size": 384000,
+        "hash": "sha256:jkl012mno345"
+      }
+    },
+    {
+      "id": "file-manager-plugin",
+      "name": "File Manager Plugin",
+      "version": "1.0.0",
+      "description": "Complete file management solution with upload, download, and organization features",
+      "author": "Shell Platform Team",
+      "category": "file-management",
+      "tags": ["files", "upload", "download", "storage", "organization"],
+      "icon": "folder",
+      "remoteUrl": "http://localhost:3005/remoteEntry.js",
+      "exposedModule": "./FileManagerPlugin",
+      "permissions": [
+        "read:files",
+        "write:files",
+        "delete:files",
+        "upload:files",
+        "download:files"
+      ],
+      "dependencies": [
+        {
+          "name": "react",
+          "version": "^18.0.0"
+        },
+        {
+          "name": "react-dropzone",
+          "version": "^14.2.0"
+        },
+        {
+          "name": "@shell-platform/shared-components",
+          "version": "^1.0.0"
+        }
+      ],
+      "configuration": {
+        "routes": [
+          {
+            "path": "/files",
+            "component": "FileManager",
+            "exact": true,
+            "title": "File Manager",
+            "protected": true,
+            "permissions": ["read:files"]
+          },
+          {
+            "path": "/files/upload",
+            "component": "FileUpload",
+            "exact": true,
+            "title": "Upload Files",
+            "protected": true,
+            "permissions": ["upload:files"]
+          },
+          {
+            "path": "/files/shared",
+            "component": "SharedFiles",
+            "exact": true,
+            "title": "Shared Files",
+            "protected": true,
+            "permissions": ["read:files"]
+          }
+        ],
+        "menuItems": [
+          {
+            "id": "file-manager",
+            "label": "File Manager",
+            "icon": "folder",
+            "order": 5,
+            "permissions": ["read:files"],
+            "children": [
+              {
+                "id": "my-files",
+                "label": "My Files",
+                "path": "/files",
+                "order": 1,
+                "permissions": ["read:files"]
+              },
+              {
+                "id": "upload-files",
+                "label": "Upload",
+                "path": "/files/upload",
+                "order": 2,
+                "permissions": ["upload:files"]
+              },
+              {
+                "id": "shared-files",
+                "label": "Shared",
+                "path": "/files/shared",
+                "order": 3,
+                "permissions": ["read:files"]
+              }
+            ]
+          }
+        ],
+        "settings": [
+          {
+            "key": "maxFileSize",
+            "label": "Maximum File Size (MB)",
+            "type": "number",
+            "defaultValue": 100,
+            "required": true,
+            "description": "Maximum allowed file size for uploads"
+          },
+          {
+            "key": "allowedFileTypes",
+            "label": "Allowed File Types",
+            "type": "multi-select",
+            "defaultValue": ["jpg", "png", "pdf", "doc", "docx"],
+            "options": [
+              {"label": "Images (JPG, PNG, GIF)", "value": "images"},
+              {"label": "Documents (PDF, DOC, DOCX)", "value": "documents"},
+              {"label": "Archives (ZIP, RAR)", "value": "archives"},
+              {"label": "All Types", "value": "all"}
+            ],
+            "description": "Allowed file types for upload"
+          }
+        ],
+        "features": ["drag-drop-upload", "file-preview", "folder-organization", "sharing", "version-control"]
+      },
+      "status": "active",
+      "metadata": {
+        "installDate": "2025-09-03T00:00:00Z",
+        "size": 640000,
+        "hash": "sha256:mno345pqr678"
+      }
+    }
+  ]
+}

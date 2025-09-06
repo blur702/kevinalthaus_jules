@@ -1,0 +1,206 @@
+{
+  "scripts": {
+    "test": {
+      "description": "Run all tests",
+      "script": "playwright test"
+    },
+    "test:headed": {
+      "description": "Run tests in headed mode",
+      "script": "playwright test --headed"
+    },
+    "test:ui": {
+      "description": "Run tests with Playwright UI",
+      "script": "playwright test --ui"
+    },
+    "test:debug": {
+      "description": "Run tests in debug mode",
+      "script": "playwright test --debug"
+    },
+    "test:auth": {
+      "description": "Run authentication tests only",
+      "script": "playwright test tests/auth/"
+    },
+    "test:core": {
+      "description": "Run core application tests",
+      "script": "playwright test tests/core/"
+    },
+    "test:plugins": {
+      "description": "Run plugin system tests", 
+      "script": "playwright test tests/plugins/"
+    },
+    "test:api": {
+      "description": "Run API integration tests",
+      "script": "playwright test tests/api/"
+    },
+    "test:visual": {
+      "description": "Run visual regression tests",
+      "script": "playwright test tests/visual/"
+    },
+    "test:performance": {
+      "description": "Run performance tests",
+      "script": "playwright test tests/performance/"
+    },
+    "test:security": {
+      "description": "Run security tests",
+      "script": "playwright test tests/security/"
+    },
+    "test:smoke": {
+      "description": "Run smoke tests only",
+      "script": "playwright test --grep @smoke"
+    },
+    "test:critical": {
+      "description": "Run critical path tests",
+      "script": "playwright test --grep @critical"
+    },
+    "test:regression": {
+      "description": "Run regression tests",
+      "script": "playwright test --grep @regression"
+    },
+    "test:parallel": {
+      "description": "Run tests in parallel with all workers",
+      "script": "playwright test --workers=4"
+    },
+    "test:serial": {
+      "description": "Run tests serially",
+      "script": "playwright test --workers=1"
+    },
+    "test:retry": {
+      "description": "Run tests with retries",
+      "script": "playwright test --retries=3"
+    },
+    "test:timeout": {
+      "description": "Run tests with extended timeout",
+      "script": "playwright test --timeout=60000"
+    },
+    "test:browser": {
+      "description": "Run tests on specific browser",
+      "script": "playwright test --project"
+    },
+    "test:chromium": {
+      "description": "Run tests on Chromium only",
+      "script": "playwright test --project chromium"
+    },
+    "test:firefox": {
+      "description": "Run tests on Firefox only", 
+      "script": "playwright test --project firefox"
+    },
+    "test:webkit": {
+      "description": "Run tests on WebKit only",
+      "script": "playwright test --project webkit"
+    },
+    "test:mobile": {
+      "description": "Run tests on mobile browsers",
+      "script": "playwright test --project 'Mobile Chrome' --project 'Mobile Safari'"
+    },
+    "test:cross-browser": {
+      "description": "Run tests on all browsers",
+      "script": "playwright test --project chromium --project firefox --project webkit"
+    },
+    "report": {
+      "description": "Show test report",
+      "script": "playwright show-report"
+    },
+    "report:open": {
+      "description": "Open test report in browser",
+      "script": "playwright show-report --open"
+    },
+    "report:generate": {
+      "description": "Generate comprehensive test report",
+      "script": "node test-report-generator.js"
+    },
+    "trace": {
+      "description": "Show trace viewer",
+      "script": "playwright show-trace"
+    },
+    "install": {
+      "description": "Install Playwright browsers",
+      "script": "playwright install"
+    },
+    "install-deps": {
+      "description": "Install system dependencies",
+      "script": "playwright install-deps"
+    },
+    "codegen": {
+      "description": "Generate test code",
+      "script": "playwright codegen"
+    },
+    "update-snapshots": {
+      "description": "Update visual test snapshots",
+      "script": "playwright test --update-snapshots"
+    },
+    "validate": {
+      "description": "Validate test configuration",
+      "script": "playwright test --dry-run"
+    },
+    "lint": {
+      "description": "Lint test files",
+      "script": "eslint tests/ pages/ utils/ --ext .ts"
+    },
+    "lint:fix": {
+      "description": "Fix lint issues",
+      "script": "eslint tests/ pages/ utils/ --ext .ts --fix"
+    },
+    "type-check": {
+      "description": "Run TypeScript type checking",
+      "script": "tsc --noEmit"
+    },
+    "clean": {
+      "description": "Clean test artifacts",
+      "script": "rm -rf test-results/ reports/ screenshots/ videos/ traces/"
+    },
+    "setup": {
+      "description": "Set up test environment",
+      "script": "cp .env.example .env.local && npm run install && npm run install-deps"
+    },
+    "ci": {
+      "description": "Run CI test suite",
+      "script": "playwright test --reporter=github --workers=2"
+    },
+    "ci:smoke": {
+      "description": "Run CI smoke tests",
+      "script": "playwright test --grep @smoke --reporter=line"
+    },
+    "dev": {
+      "description": "Run tests in development mode with watch",
+      "script": "playwright test --headed --ui"
+    },
+    "benchmark": {
+      "description": "Run performance benchmark tests",
+      "script": "playwright test tests/performance/ --project performance --reporter=json:reports/benchmark.json"
+    },
+    "security-scan": {
+      "description": "Run security vulnerability scan",
+      "script": "playwright test tests/security/ --project chromium --grep @security"
+    },
+    "accessibility": {
+      "description": "Run accessibility tests",
+      "script": "playwright test --grep @accessibility"
+    },
+    "docker:test": {
+      "description": "Run tests in Docker container",
+      "script": "docker run --rm -v $(pwd):/work -w /work mcr.microsoft.com/playwright:v1.40.0-focal npm test"
+    },
+    "docker:headed": {
+      "description": "Run headed tests in Docker with VNC",
+      "script": "docker run --rm -v $(pwd):/work -w /work -p 5900:5900 playwright-vnc npm run test:headed"
+    },
+    "start-mock-services": {
+      "description": "Start mock services for testing",
+      "script": "node utils/mock-services.js &"
+    },
+    "stop-mock-services": {
+      "description": "Stop mock services",
+      "script": "pkill -f mock-services.js"
+    }
+  },
+  "aliases": {
+    "t": "test",
+    "th": "test:headed",
+    "td": "test:debug",
+    "r": "report",
+    "rg": "report:generate",
+    "i": "install",
+    "c": "codegen",
+    "up": "update-snapshots"
+  }
+}

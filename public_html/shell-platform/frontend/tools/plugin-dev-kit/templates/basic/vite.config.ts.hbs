@@ -1,0 +1,70 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import federation from '@originjs/vite-plugin-federation'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    federation({
+      name: '{{containerName}}_plugin',
+      filename: 'remoteEntry.js',
+      exposes: {
+        './{{pascalCase}}Plugin': './src/{{pascalCase}}Plugin.tsx',
+      },
+      shared: {
+        react: {
+          singleton: true,
+        },
+        'react-dom': {
+          singleton: true,
+        },
+        'lucide-react': {
+          singleton: true,
+        },
+        clsx: {
+          singleton: true,
+        }
+      }
+    })
+  ],
+  server: {
+    host: '0.0.0.0',
+    port: {{port}},
+    cors: true,
+    {{#if hmr}}
+    hmr: {
+      port: {{port}}
+    },
+    {{/if}}
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization, X-Requested-With'
+    }
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: {{port}},
+    cors: true,
+  },
+  build: {
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
+    {{#if analyzer}}
+    rollupOptions: {
+      plugins: [
+        // Bundle analyzer plugin would go here
+      ]
+    },
+    {{/if}}
+    rollupOptions: {
+      external: ['react', 'react-dom']
+    }
+  },
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  }
+})

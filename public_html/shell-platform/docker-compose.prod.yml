@@ -1,0 +1,94 @@
+version: '3.9'
+
+# Production overrides for docker-compose.yml
+# This file extends the base docker-compose.yml with production-specific settings
+
+services:
+  nginx:
+    restart: always
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./frontend/shell/dist:/usr/share/nginx/html/shell:ro
+      - ./frontend/plugins:/usr/share/nginx/html/plugins:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  api-gateway:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  auth-service:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  data-service:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  file-service:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  external-service:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  postgres:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - /var/www/backups/postgres:/backups
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+
+  redis:
+    restart: always
+    env_file:
+      - /var/www/secrets/shell-platform.env.production
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"

@@ -1,0 +1,270 @@
+# Alertmanager Configuration
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@shell-platform.com'
+  smtp_auth_username: 'alerts@shell-platform.com'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree for alerts
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default-receiver'
+  routes:
+    # Critical alerts route
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 5s
+      repeat_interval: 5m
+      routes:
+        # Database critical alerts
+        - match:
+            alertname: DatabaseDown
+          receiver: 'database-team'
+        # Security critical alerts
+        - match_re:
+            alertname: (VirusThreatDetected|UnauthorizedAccess)
+          receiver: 'security-team'
+        # Revenue critical alerts
+        - match:
+            alertname: RevenueDrop
+          receiver: 'business-team'
+
+    # Warning alerts route
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      group_interval: 5m
+      repeat_interval: 2h
+
+    # Info alerts route
+    - match:
+        severity: info
+      receiver: 'info-alerts'
+      group_interval: 30m
+      repeat_interval: 24h
+
+    # Development environment alerts
+    - match:
+        environment: development
+      receiver: 'dev-alerts'
+      repeat_interval: 24h
+
+    # Maintenance alerts (suppress during maintenance windows)
+    - match:
+        maintenance: 'true'
+      receiver: 'null'
+
+# Inhibition rules to suppress alerts
+inhibit_rules:
+  # Suppress warning alerts when critical alerts are firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+  # Suppress instance alerts when entire service is down
+  - source_match:
+      alertname: 'InstanceDown'
+    target_match_re:
+      alertname: '(HighCPUUsage|HighMemoryUsage|DiskSpaceLow)'
+    equal: ['instance']
+
+  # Suppress application alerts when infrastructure is down
+  - source_match_re:
+      alertname: '(DatabaseDown|RedisDown)'
+    target_match_re:
+      alertname: '(HighErrorRate|HighResponseTime)'
+
+# Alert receivers
+receivers:
+  # Default receiver
+  - name: 'default-receiver'
+    email_configs:
+      - to: 'devops@shell-platform.com'
+        subject: 'Shell Platform Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Labels: {{ range .Labels.SortedPairs }}
+            {{ .Name }}: {{ .Value }}
+          {{ end }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+        headers:
+          Subject: '[ALERT] {{ .GroupLabels.alertname }} - {{ .Status | title }}'
+
+  # Critical alerts
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'critical-alerts@shell-platform.com'
+        subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+        body: |
+          CRITICAL ALERT DETECTED!
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          {{ end }}
+          
+          Please take immediate action to resolve this issue.
+        headers:
+          Priority: 'high'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#critical-alerts'
+        title: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Instance:* {{ .Labels.instance }}
+          *Started:* {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+        send_resolved: true
+    pagerduty_configs:
+      - routing_key: '${PAGERDUTY_ROUTING_KEY}'
+        description: '{{ .GroupLabels.alertname }}: {{ .GroupLabels.instance }}'
+        client: 'Shell Platform Alertmanager'
+        client_url: 'https://grafana.shell-platform.com'
+
+  # Warning alerts
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'warnings@shell-platform.com'
+        subject: '⚠️ WARNING: {{ .GroupLabels.alertname }}'
+        body: |
+          Warning alert detected:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          {{ end }}
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#monitoring'
+        title: '⚠️ Warning: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Instance:* {{ .Labels.instance }}
+          {{ end }}
+
+  # Info alerts
+  - name: 'info-alerts'
+    email_configs:
+      - to: 'info@shell-platform.com'
+        subject: 'ℹ️ INFO: {{ .GroupLabels.alertname }}'
+        body: |
+          Information alert:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ end }}
+
+  # Database team alerts
+  - name: 'database-team'
+    email_configs:
+      - to: 'dba@shell-platform.com'
+        subject: '🗄️ DATABASE ALERT: {{ .GroupLabels.alertname }}'
+        body: |
+          Database alert detected:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          Please check database status and performance.
+          {{ end }}
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#database-team'
+        title: '🗄️ Database Alert: {{ .GroupLabels.alertname }}'
+
+  # Security team alerts
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@shell-platform.com'
+        subject: '🛡️ SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        body: |
+          SECURITY ALERT DETECTED!
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          Immediate security review required.
+          {{ end }}
+        headers:
+          Priority: 'high'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#security-alerts'
+        title: '🛡️ SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        color: 'danger'
+
+  # Business team alerts
+  - name: 'business-team'
+    email_configs:
+      - to: 'business@shell-platform.com'
+        subject: '💼 BUSINESS ALERT: {{ .GroupLabels.alertname }}'
+        body: |
+          Business metric alert:
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          Business impact analysis required.
+          {{ end }}
+
+  # Development alerts
+  - name: 'dev-alerts'
+    slack_configs:
+      - api_url: '${SLACK_DEV_WEBHOOK_URL}'
+        channel: '#dev-alerts'
+        title: '🔧 Dev Alert: {{ .GroupLabels.alertname }}'
+        text: 'Development environment alert - non-critical'
+
+  # Null receiver for suppressed alerts
+  - name: 'null'
+
+# Time intervals for silencing
+time_intervals:
+  - name: business_hours
+    time_intervals:
+      - times:
+        - start_time: '09:00'
+          end_time: '17:00'
+        weekdays: ['monday:friday']
+        months: ['1:12']
+
+  - name: maintenance_window
+    time_intervals:
+      - times:
+        - start_time: '02:00'
+          end_time: '04:00'
+        weekdays: ['sunday']

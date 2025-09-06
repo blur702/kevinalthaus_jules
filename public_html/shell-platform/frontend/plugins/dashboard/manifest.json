@@ -1,0 +1,320 @@
+{
+  "id": "core-dashboard",
+  "name": "Dashboard",
+  "version": "1.0.0",
+  "description": "Core dashboard plugin providing main overview and widgets",
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  "homepage": "https://shellplatform.io/plugins/dashboard",
+  
+  "category": "core",
+  "tags": ["core", "dashboard", "overview", "widgets"],
+  "icon": "dashboard",
+  "screenshots": [
+    "/plugins/dashboard/screenshots/main.png",
+    "/plugins/dashboard/screenshots/widgets.png"
+  ],
+  
+  "minShellVersion": "1.0.0",
+  "maxShellVersion": "2.0.0",
+  
+  "dependencies": [],
+  "peerDependencies": [],
+  
+  "permissions": [
+    {
+      "name": "read:analytics",
+      "reason": "Display analytics data on dashboard",
+      "required": false
+    },
+    {
+      "name": "read:notifications",
+      "reason": "Show recent notifications",
+      "required": false
+    }
+  ],
+  
+  "capabilities": [
+    {
+      "name": "widgets",
+      "version": "1.0.0"
+    },
+    {
+      "name": "charts",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "entryPoints": {
+    "main": "index.js",
+    "settings": "settings.js",
+    "styles": "styles.css"
+  },
+  
+  "navigation": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "icon": "home",
+      "path": "/",
+      "position": "main",
+      "priority": 1
+    }
+  ],
+  
+  "routes": [
+    {
+      "path": "/",
+      "component": "DashboardPage",
+      "exact": true,
+      "layout": "default",
+      "meta": {
+        "title": "Dashboard",
+        "description": "System overview and widgets"
+      }
+    },
+    {
+      "path": "/dashboard/customize",
+      "component": "CustomizeDashboard",
+      "exact": true,
+      "permissions": ["dashboard:customize"],
+      "meta": {
+        "title": "Customize Dashboard",
+        "description": "Customize your dashboard layout"
+      }
+    }
+  ],
+  
+  "requiredServices": [
+    {
+      "name": "authentication",
+      "version": "1.0.0",
+      "optional": false
+    },
+    {
+      "name": "database",
+      "version": "1.0.0",
+      "optional": true
+    },
+    {
+      "name": "widgets",
+      "version": "1.0.0",
+      "optional": false
+    },
+    {
+      "name": "analytics",
+      "version": "1.0.0",
+      "optional": true
+    }
+  ],
+  
+  "providedServices": [
+    {
+      "name": "dashboard-api",
+      "version": "1.0.0",
+      "singleton": true,
+      "factory": "DashboardService"
+    }
+  ],
+  
+  "database": {
+    "tables": [
+      {
+        "name": "dashboard_layouts",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true,
+            "default": "gen_random_uuid()"
+          },
+          {
+            "name": "user_id",
+            "type": "uuid",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)",
+            "nullable": false
+          },
+          {
+            "name": "layout",
+            "type": "jsonb",
+            "nullable": false
+          },
+          {
+            "name": "is_default",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "default": "now()"
+          },
+          {
+            "name": "updated_at",
+            "type": "timestamp",
+            "default": "now()"
+          }
+        ],
+        "indexes": [
+          {
+            "name": "idx_dashboard_layouts_user",
+            "columns": ["user_id"]
+          }
+        ],
+        "foreignKeys": [
+          {
+            "name": "fk_dashboard_layouts_user",
+            "column": "user_id",
+            "references": {
+              "table": "users",
+              "column": "id"
+            },
+            "onDelete": "cascade"
+          }
+        ]
+      }
+    ],
+    "migrations": "/migrations/dashboard.sql",
+    "seedData": "/seeds/dashboard.sql"
+  },
+  
+  "hooks": [
+    {
+      "name": "filter_dashboard_widgets",
+      "handler": "filterDashboardWidgets",
+      "priority": 10
+    },
+    {
+      "name": "action_dashboard_loaded",
+      "handler": "onDashboardLoaded",
+      "priority": 10
+    }
+  ],
+  
+  "events": [
+    {
+      "name": "dashboard:widget-added",
+      "description": "Fired when a widget is added to dashboard"
+    },
+    {
+      "name": "dashboard:widget-removed",
+      "description": "Fired when a widget is removed from dashboard"
+    },
+    {
+      "name": "dashboard:layout-changed",
+      "description": "Fired when dashboard layout changes"
+    }
+  ],
+  
+  "widgets": [
+    {
+      "id": "stats-widget",
+      "name": "Statistics",
+      "component": "StatsWidget",
+      "zones": ["dashboard", "sidebar"],
+      "defaultConfig": {
+        "refreshInterval": 60000,
+        "showGraph": true
+      }
+    },
+    {
+      "id": "activity-widget",
+      "name": "Recent Activity",
+      "component": "ActivityWidget",
+      "zones": ["dashboard"],
+      "defaultConfig": {
+        "limit": 10
+      }
+    },
+    {
+      "id": "quick-actions-widget",
+      "name": "Quick Actions",
+      "component": "QuickActionsWidget",
+      "zones": ["dashboard", "sidebar"],
+      "defaultConfig": {
+        "columns": 3
+      }
+    }
+  ],
+  
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/dashboard/stats",
+      "handler": "getStats",
+      "permissions": ["dashboard:read"],
+      "rateLimit": {
+        "window": 60,
+        "max": 100
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/dashboard/layout",
+      "handler": "saveLayout",
+      "permissions": ["dashboard:write"]
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/widgets",
+      "handler": "getAvailableWidgets",
+      "permissions": ["dashboard:read"]
+    }
+  ],
+  
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "defaultLayout": {
+        "type": "string",
+        "enum": ["grid", "list", "compact"],
+        "default": "grid"
+      },
+      "refreshInterval": {
+        "type": "number",
+        "minimum": 10000,
+        "maximum": 300000,
+        "default": 60000
+      },
+      "showWelcomeMessage": {
+        "type": "boolean",
+        "default": true
+      },
+      "maxWidgets": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 20,
+        "default": 10
+      }
+    },
+    "required": ["defaultLayout"]
+  },
+  
+  "locales": [
+    {
+      "code": "en",
+      "name": "English",
+      "file": "locales/en.json"
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "file": "locales/es.json"
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "file": "locales/fr.json"
+    }
+  ],
+  
+  "build": {
+    "outputDir": "dist",
+    "publicPath": "/plugins/dashboard/",
+    "externals": ["react", "react-dom"]
+  }
+}

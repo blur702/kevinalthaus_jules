@@ -1,0 +1,141 @@
+---
+title: Claude Code Subagents Hierarchy
+---
+graph TD
+    %% Root node
+    Claude["> Claude Code Subagents<br/>76 Total Agents"]
+    
+    %% Model Categories
+    Claude --> Haiku["¡ Haiku Model<br/>15 Agents<br/>Fast & Cost-Effective"]
+    Claude --> Sonnet["– Sonnet Model<br/>44 Agents<br/>Balanced Performance"]
+    Claude --> Opus[">à Opus Model<br/>15 Agents<br/>Maximum Capability"]
+    
+    %% Development & Architecture Category
+    DevArch["<× Development & Architecture"]
+    Claude --> DevArch
+    
+    DevArch --> DA1["backend-architect<br/>(Sonnet)"]
+    DevArch --> DA2["frontend-developer<br/>(Sonnet)"]
+    DevArch --> DA3["ui-ux-designer<br/>(Sonnet)"]
+    DevArch --> DA4["mobile-developer<br/>(Sonnet)"]
+    DevArch --> DA5["graphql-architect<br/>(Sonnet)"]
+    DevArch --> DA6["architect-reviewer<br/>(Opus)"]
+    
+    %% Language Specialists Category
+    LangSpec["=» Language Specialists"]
+    Claude --> LangSpec
+    
+    LangSpec --> LS1["python-pro<br/>(Sonnet)"]
+    LangSpec --> LS2["ruby-pro<br/>(Sonnet)"]
+    LangSpec --> LS3["golang-pro<br/>(Sonnet)"]
+    LangSpec --> LS4["rust-pro<br/>(Sonnet)"]
+    LangSpec --> LS5["c-pro<br/>(Sonnet)"]
+    LangSpec --> LS6["cpp-pro<br/>(Sonnet)"]
+    LangSpec --> LS7["javascript-pro<br/>(Sonnet)"]
+    LangSpec --> LS8["typescript-pro<br/>(Sonnet)"]
+    LangSpec --> LS9["php-pro<br/>(Sonnet)"]
+    LangSpec --> LS10["java-pro<br/>(Sonnet)"]
+    LangSpec --> LS11["elixir-pro<br/>(Sonnet)"]
+    LangSpec --> LS12["csharp-pro<br/>(Sonnet)"]
+    LangSpec --> LS13["scala-pro<br/>(Sonnet)"]
+    LangSpec --> LS14["flutter-expert<br/>(Sonnet)"]
+    LangSpec --> LS15["unity-developer<br/>(Sonnet)"]
+    LangSpec --> LS16["minecraft-bukkit-pro<br/>(Sonnet)"]
+    LangSpec --> LS17["ios-developer<br/>(Sonnet)"]
+    LangSpec --> LS18["sql-pro<br/>(Sonnet)"]
+    
+    %% Infrastructure & Operations Category
+    InfraOps["™ Infrastructure & Operations"]
+    Claude --> InfraOps
+    
+    InfraOps --> IO1["devops-troubleshooter<br/>(Sonnet)"]
+    InfraOps --> IO2["deployment-engineer<br/>(Sonnet)"]
+    InfraOps --> IO3["cloud-architect<br/>(Opus)"]
+    InfraOps --> IO4["hybrid-cloud-architect<br/>(Sonnet)"]
+    InfraOps --> IO5["kubernetes-architect<br/>(Sonnet)"]
+    InfraOps --> IO6["database-optimizer<br/>(Sonnet)"]
+    InfraOps --> IO7["database-admin<br/>(Sonnet)"]
+    InfraOps --> IO8["terraform-specialist<br/>(Sonnet)"]
+    InfraOps --> IO9["incident-responder<br/>(Opus)"]
+    InfraOps --> IO10["network-engineer<br/>(Sonnet)"]
+    InfraOps --> IO11["dx-optimizer<br/>(Sonnet)"]
+    
+    %% Quality & Security Category
+    QualSec["= Quality & Security"]
+    Claude --> QualSec
+    
+    QualSec --> QS1["code-reviewer<br/>(Sonnet)"]
+    QualSec --> QS2["security-auditor<br/>(Opus)"]
+    QualSec --> QS3["test-automator<br/>(Sonnet)"]
+    QualSec --> QS4["performance-engineer<br/>(Opus)"]
+    QualSec --> QS5["debugger<br/>(Sonnet)"]
+    QualSec --> QS6["error-detective<br/>(Sonnet)"]
+    QualSec --> QS7["search-specialist<br/>(Haiku)"]
+    
+    %% Data & AI Category
+    DataAI["> Data & AI"]
+    Claude --> DataAI
+    
+    DataAI --> DAI1["data-scientist<br/>(Haiku)"]
+    DataAI --> DAI2["data-engineer<br/>(Sonnet)"]
+    DataAI --> DAI3["ai-engineer<br/>(Opus)"]
+    DataAI --> DAI4["ml-engineer<br/>(Sonnet)"]
+    DataAI --> DAI5["mlops-engineer<br/>(Opus)"]
+    DataAI --> DAI6["prompt-engineer<br/>(Opus)"]
+    
+    %% Specialized Domains Category
+    SpecDom["<¯ Specialized Domains"]
+    Claude --> SpecDom
+    
+    SpecDom --> SD1["api-documenter<br/>(Haiku)"]
+    SpecDom --> SD2["payment-integration<br/>(Sonnet)"]
+    SpecDom --> SD3["quant-analyst<br/>(Opus)"]
+    SpecDom --> SD4["risk-manager<br/>(Opus)"]
+    SpecDom --> SD5["legacy-modernizer<br/>(Sonnet)"]
+    SpecDom --> SD6["context-manager<br/>(Opus)"]
+    
+    %% Documentation Category
+    Docs["=Ú Documentation"]
+    Claude --> Docs
+    
+    Docs --> D1["docs-architect<br/>(Opus)"]
+    Docs --> D2["mermaid-expert<br/>(Sonnet)"]
+    Docs --> D3["reference-builder<br/>(Haiku)"]
+    Docs --> D4["tutorial-engineer<br/>(Opus)"]
+    
+    %% Business & Marketing Category
+    BizMark["=¼ Business & Marketing"]
+    Claude --> BizMark
+    
+    BizMark --> BM1["business-analyst<br/>(Haiku)"]
+    BizMark --> BM2["content-marketer<br/>(Haiku)"]
+    BizMark --> BM3["hp-pro<br/>(Sonnet)"]
+    BizMark --> BM4["sales-automator<br/>(Haiku)"]
+    BizMark --> BM5["customer-support<br/>(Haiku)"]
+    BizMark --> BM6["legal-advisor<br/>(Haiku)"]
+    
+    %% SEO & Content Optimization Category
+    SEO["<¯ SEO & Content Optimization"]
+    Claude --> SEO
+    
+    SEO --> S1["seo-content-auditor<br/>(Sonnet)"]
+    SEO --> S2["seo-meta-optimizer<br/>(Haiku)"]
+    SEO --> S3["seo-keyword-strategist<br/>(Haiku)"]
+    SEO --> S4["seo-structure-architect<br/>(Haiku)"]
+    SEO --> S5["seo-snippet-hunter<br/>(Haiku)"]
+    SEO --> S6["seo-content-refresher<br/>(Haiku)"]
+    SEO --> S7["seo-cannibalization-detector<br/>(Haiku)"]
+    SEO --> S8["seo-authority-builder<br/>(Sonnet)"]
+    SEO --> S9["seo-content-writer<br/>(Sonnet)"]
+    SEO --> S10["seo-content-planner<br/>(Haiku)"]
+    
+    %% Styling
+    classDef haikuAgent fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef sonnetAgent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef opusAgent fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef category fill:#f5f5f5,stroke:#424242,stroke-width:2px
+    classDef model fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    
+    class Claude category
+    class Haiku,Sonnet,Opus model
+    class DevArch,LangSpec,InfraOps,QualSec,DataAI,SpecDom,Docs,BizMark,SEO category

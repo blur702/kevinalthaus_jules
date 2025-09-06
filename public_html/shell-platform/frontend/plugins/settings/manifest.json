@@ -1,0 +1,103 @@
+{
+  "id": "core-settings",
+  "name": "Settings",
+  "version": "1.0.0",
+  "description": "System and plugin configuration management",
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  
+  "category": "core",
+  "tags": ["core", "settings", "configuration"],
+  "icon": "settings",
+  
+  "minShellVersion": "1.0.0",
+  "dependencies": [],
+  
+  "permissions": [
+    {
+      "name": "settings:manage",
+      "reason": "Manage system settings",
+      "required": true
+    }
+  ],
+  
+  "entryPoints": {
+    "main": "index.js"
+  },
+  
+  "navigation": [
+    {
+      "id": "settings",
+      "label": "Settings",
+      "icon": "settings",
+      "path": "/settings",
+      "position": "main",
+      "priority": 100,
+      "permissions": ["settings:read"]
+    }
+  ],
+  
+  "routes": [
+    {
+      "path": "/settings",
+      "component": "SettingsPage",
+      "exact": true,
+      "permissions": ["settings:read"]
+    },
+    {
+      "path": "/settings/general",
+      "component": "GeneralSettings",
+      "permissions": ["settings:read"]
+    },
+    {
+      "path": "/settings/plugins",
+      "component": "PluginSettings",
+      "permissions": ["settings:manage"]
+    },
+    {
+      "path": "/settings/appearance",
+      "component": "AppearanceSettings"
+    }
+  ],
+  
+  "requiredServices": [
+    {
+      "name": "settings",
+      "version": "1.0.0"
+    },
+    {
+      "name": "database",
+      "version": "1.0.0"
+    },
+    {
+      "name": "theme",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "hooks": [
+    {
+      "name": "filter_settings_sections",
+      "handler": "filterSettingsSections"
+    },
+    {
+      "name": "action_settings_saved",
+      "handler": "onSettingsSaved"
+    }
+  ],
+  
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/settings",
+      "handler": "getSettings",
+      "permissions": ["settings:read"]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/settings",
+      "handler": "updateSettings",
+      "permissions": ["settings:write"]
+    }
+  ]
+}

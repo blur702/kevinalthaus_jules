@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      target: production
+    container_name: shell-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-default-secret-change-in-production}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-900000}
+      - RATE_LIMIT_REQUESTS=${RATE_LIMIT_REQUESTS:-100}
+      - CIRCUIT_BREAKER_TIMEOUT=${CIRCUIT_BREAKER_TIMEOUT:-3000}
+      - CIRCUIT_BREAKER_THRESHOLD=${CIRCUIT_BREAKER_THRESHOLD:-50}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - DATA_SERVICE_URL=http://data-service:3002
+      - FILE_SERVICE_URL=http://file-service:3003
+      - EXTERNAL_SERVICE_URL=http://external-service:3004
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - shell-platform
+    depends_on:
+      - auth-service
+      - data-service
+      - file-service
+      - external-service
+
+  # Mock services for development/testing
+  auth-service:
+    image: nginx:alpine
+    container_name: mock-auth-service
+    ports:
+      - "3001:80"
+    volumes:
+      - ./mock-services/auth:/usr/share/nginx/html
+    networks:
+      - shell-platform
+
+  data-service:
+    image: nginx:alpine
+    container_name: mock-data-service
+    ports:
+      - "3002:80"
+    volumes:
+      - ./mock-services/data:/usr/share/nginx/html
+    networks:
+      - shell-platform
+
+  file-service:
+    image: nginx:alpine
+    container_name: mock-file-service
+    ports:
+      - "3003:80"
+    volumes:
+      - ./mock-services/files:/usr/share/nginx/html
+    networks:
+      - shell-platform
+
+  external-service:
+    image: nginx:alpine
+    container_name: mock-external-service
+    ports:
+      - "3004:80"
+    volumes:
+      - ./mock-services/external:/usr/share/nginx/html
+    networks:
+      - shell-platform
+
+networks:
+  shell-platform:
+    driver: bridge
+
+volumes:
+  api-gateway-logs:

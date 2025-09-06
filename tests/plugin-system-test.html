@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plugin System Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .header {
+      background: #1976d2;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .status.success { background: #4caf50; color: white; }
+    .status.error { background: #f44336; color: white; }
+    .status.pending { background: #ff9800; color: white; }
+    .status.disabled { background: #9e9e9e; color: white; }
+    .log {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    button {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover { background: #1976d2; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .plugin-card {
+      background: #fafafa;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid #2196f3;
+    }
+    .menu-items {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .menu-item {
+      padding: 8px 16px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .menu-item:hover {
+      background: #bbdefb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Shell Platform - Plugin System Test</h1>
+    <p>Testing the complete plugin lifecycle with database integration</p>
+  </div>
+
+  <div class="test-section">
+    <h2>System Status</h2>
+    <p>Plugin Manager: <span id="manager-status" class="status pending">Not Initialized</span></p>
+    <p>Database Service: <span id="db-status" class="status pending">Not Connected</span></p>
+    <p>Router Service: <span id="router-status" class="status pending">Not Ready</span></p>
+    <p>Menu Service: <span id="menu-status" class="status pending">Not Ready</span></p>
+    <button onclick="initializeSystem()">Initialize System</button>
+    <button onclick="checkServices()">Check Services</button>
+    <div id="system-log" class="log"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Plugin Discovery</h2>
+    <button onclick="discoverPlugins()">Discover Plugins</button>
+    <button onclick="listPlugins()">List All Plugins</button>
+    <div id="plugin-list"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Hello World Plugin Control</h2>
+    <div class="plugin-card">
+      <h3>Hello World Plugin</h3>
+      <p>Status: <span id="hello-status" class="status disabled">Not Installed</span></p>
+      <p>Version: 1.0.0</p>
+      <p>Description: A simple demonstration plugin showing how plugins work</p>
+      
+      <div style="margin-top: 15px;">
+        <button onclick="installHelloWorld()">Install Plugin</button>
+        <button onclick="enableHelloWorld()">Enable Plugin</button>
+        <button onclick="disableHelloWorld()">Disable Plugin</button>
+        <button onclick="uninstallHelloWorld()">Uninstall Plugin</button>
+      </div>
+      
+      <div id="hello-log" class="log"></div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Menu System Test</h2>
+    <p>Registered Menu Items:</p>
+    <div id="menu-items" class="menu-items"></div>
+    <button onclick="refreshMenu()">Refresh Menu</button>
+  </div>
+
+  <div class="test-section">
+    <h2>Route System Test</h2>
+    <p>Registered Routes:</p>
+    <div id="route-list"></div>
+    <button onclick="refreshRoutes()">Refresh Routes</button>
+  </div>
+
+  <div class="test-section">
+    <h2>Plugin Content Rendering</h2>
+    <button onclick="renderHelloWorld()">Render Hello World Content</button>
+    <div id="plugin-content" style="margin-top: 20px;"></div>
+  </div>
+
+  <script type="module">
+    // Mock implementations for testing
+    window.pluginManager = null;
+    window.database = null;
+    window.router = null;
+    window.menu = null;
+    
+    const log = (section, message) => {
+      const logDiv = document.getElementById(section + '-log');
+      if (logDiv) {
+        const time = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `[${time}] ${message}<br>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+    };
+    
+    const updateStatus = (elementId, status, className) => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.textContent = status;
+        element.className = 'status ' + className;
+      }
+    };
+    
+    window.initializeSystem = async () => {
+      try {
+        log('system', 'Initializing Plugin Manager...');
+        
+        // Mock initialization
+        window.pluginManager = {
+          initialized: true,
+          plugins: new Map(),
+          enablePlugin: async (id) => {
+            window.pluginManager.plugins.set(id, { enabled: true });
+            return true;
+          },
+          disablePlugin: async (id) => {
+            const plugin = window.pluginManager.plugins.get(id);
+            if (plugin) plugin.enabled = false;
+            return true;
+          },
+          installPlugin: async (id) => {
+            window.pluginManager.plugins.set(id, { installed: true, enabled: false });
+            return true;
+          },
+          uninstallPlugin: async (id) => {
+            window.pluginManager.plugins.delete(id);
+            return true;
+          }
+        };
+        
+        window.database = { connected: true };
+        window.router = { 
+          routes: new Map(),
+          registerRoute: (path, component) => {
+            window.router.routes.set(path, { path, component });
+          }
+        };
+        window.menu = { 
+          items: [],
+          registerMenuItem: (item) => {
+            window.menu.items.push(item);
+          }
+        };
+        
+        updateStatus('manager-status', 'Initialized', 'success');
+        updateStatus('db-status', 'Connected', 'success');
+        updateStatus('router-status', 'Ready', 'success');
+        updateStatus('menu-status', 'Ready', 'success');
+        
+        log('system', '✅ System initialized successfully');
+      } catch (error) {
+        log('system', '❌ Error: ' + error.message);
+        updateStatus('manager-status', 'Error', 'error');
+      }
+    };
+    
+    window.checkServices = () => {
+      log('system', 'Checking services...');
+      const services = ['database', 'router', 'menu', 'auth', 'settings'];
+      services.forEach(service => {
+        const available = window[service] ? '✓' : '✗';
+        log('system', `${service}: ${available}`);
+      });
+    };
+    
+    window.discoverPlugins = () => {
+      log('system', 'Discovering plugins...');
+      const plugins = [
+        { id: 'hello-world', name: 'Hello World', version: '1.0.0' },
+        { id: 'analytics', name: 'Analytics Dashboard', version: '1.0.0' },
+        { id: 'user-manager', name: 'User Management', version: '1.0.0' }
+      ];
+      
+      const listDiv = document.getElementById('plugin-list');
+      listDiv.innerHTML = '<h3>Discovered Plugins:</h3>';
+      plugins.forEach(plugin => {
+        listDiv.innerHTML += `
+          <div class="plugin-card">
+            <strong>${plugin.name}</strong> (v${plugin.version})<br>
+            ID: ${plugin.id}
+          </div>
+        `;
+      });
+      
+      log('system', `Found ${plugins.length} plugins`);
+    };
+    
+    window.listPlugins = () => {
+      window.discoverPlugins();
+    };
+    
+    window.installHelloWorld = async () => {
+      log('hello', 'Installing Hello World plugin...');
+      if (window.pluginManager) {
+        const success = await window.pluginManager.installPlugin('hello-world');
+        if (success) {
+          updateStatus('hello-status', 'Installed', 'disabled');
+          log('hello', '✅ Plugin installed successfully');
+          
+          // Simulate database schema creation
+          log('hello', 'Creating plugin database schema...');
+          log('hello', 'CREATE SCHEMA plugin_hello_world');
+          log('hello', '✅ Schema created');
+        }
+      }
+    };
+    
+    window.enableHelloWorld = async () => {
+      log('hello', 'Enabling Hello World plugin...');
+      if (window.pluginManager) {
+        const success = await window.pluginManager.enablePlugin('hello-world');
+        if (success) {
+          updateStatus('hello-status', 'Enabled', 'success');
+          log('hello', '✅ Plugin enabled');
+          
+          // Register menu item
+          if (window.menu) {
+            window.menu.registerMenuItem({
+              id: 'hello-world',
+              label: 'Hello World',
+              path: '/hello-world',
+              icon: '👋'
+            });
+            log('hello', '✅ Menu item registered');
+          }
+          
+          // Register route
+          if (window.router) {
+            window.router.registerRoute('/hello-world', () => 'HelloWorldComponent');
+            log('hello', '✅ Route registered');
+          }
+          
+          window.refreshMenu();
+          window.refreshRoutes();
+        }
+      }
+    };
+    
+    window.disableHelloWorld = async () => {
+      log('hello', 'Disabling Hello World plugin...');
+      if (window.pluginManager) {
+        const success = await window.pluginManager.disablePlugin('hello-world');
+        if (success) {
+          updateStatus('hello-status', 'Disabled', 'disabled');
+          log('hello', '✅ Plugin disabled');
+          
+          // Remove menu and routes
+          if (window.menu) {
+            window.menu.items = window.menu.items.filter(item => item.id !== 'hello-world');
+          }
+          if (window.router) {
+            window.router.routes.delete('/hello-world');
+          }
+          
+          window.refreshMenu();
+          window.refreshRoutes();
+        }
+      }
+    };
+    
+    window.uninstallHelloWorld = async () => {
+      log('hello', 'Uninstalling Hello World plugin...');
+      if (window.pluginManager) {
+        const success = await window.pluginManager.uninstallPlugin('hello-world');
+        if (success) {
+          updateStatus('hello-status', 'Not Installed', 'disabled');
+          log('hello', '✅ Plugin uninstalled');
+          
+          // Simulate database schema removal
+          log('hello', 'Dropping plugin database schema...');
+          log('hello', 'DROP SCHEMA plugin_hello_world CASCADE');
+          log('hello', '✅ Schema dropped');
+        }
+      }
+    };
+    
+    window.refreshMenu = () => {
+      const menuDiv = document.getElementById('menu-items');
+      if (window.menu && window.menu.items.length > 0) {
+        menuDiv.innerHTML = window.menu.items.map(item => 
+          `<div class="menu-item">${item.icon} ${item.label}</div>`
+        ).join('');
+      } else {
+        menuDiv.innerHTML = '<em>No menu items registered</em>';
+      }
+    };
+    
+    window.refreshRoutes = () => {
+      const routeDiv = document.getElementById('route-list');
+      if (window.router && window.router.routes.size > 0) {
+        routeDiv.innerHTML = '<ul>';
+        window.router.routes.forEach((route, path) => {
+          routeDiv.innerHTML += `<li>${path} → ${route.component}</li>`;
+        });
+        routeDiv.innerHTML += '</ul>';
+      } else {
+        routeDiv.innerHTML = '<em>No routes registered</em>';
+      }
+    };
+    
+    window.renderHelloWorld = () => {
+      const contentDiv = document.getElementById('plugin-content');
+      
+      // Check if plugin is enabled
+      const plugin = window.pluginManager?.plugins.get('hello-world');
+      if (!plugin || !plugin.enabled) {
+        contentDiv.innerHTML = '<p style="color: red;">Plugin is not enabled. Please enable it first.</p>';
+        return;
+      }
+      
+      // Simulate rendering the Hello World component
+      contentDiv.innerHTML = `
+        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+          <h1 style="color: #2196f3; font-size: 48px;">👋</h1>
+          <h2 style="color: #2196f3;">Hello World!</h2>
+          <p style="color: #666; margin: 20px 0;">Current Time: ${new Date().toLocaleTimeString()}</p>
+          
+          <div style="background: #f5f5f5; padding: 20px; border-radius: 4px; margin-top: 20px;">
+            <h3>Plugin Information</h3>
+            <ul style="text-align: left; list-style: none; padding: 0;">
+              <li>✓ Plugin: Hello World</li>
+              <li>✓ Version: 1.0.0</li>
+              <li>✓ Status: Enabled</li>
+              <li>✓ This content is rendered independently from the shell!</li>
+            </ul>
+          </div>
+          
+          <p style="color: #999; font-size: 14px; margin-top: 20px;">
+            This is a demonstration of the plugin system. The shell provides the frame,
+            but this content is entirely from the Hello World plugin.
+          </p>
+        </div>
+      `;
+    };
+    
+    // Auto-initialize on load
+    window.addEventListener('load', () => {
+      console.log('Plugin System Test Page Loaded');
+    });
+  </script>
+</body>
+</html>

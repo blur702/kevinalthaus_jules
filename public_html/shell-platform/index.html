@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Shell Platform - A powerful, extensible shell platform with plugin support" />
+    <meta name="theme-color" content="#3b82f6" />
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="application-name" content="Shell Platform" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Shell Platform" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <title>Shell Platform</title>
+    
+    <!-- Initial loading styles to prevent FOUC -->
+    <style>
+      /* Critical CSS for loading screen */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9fafb;
+      }
+      
+      .dark #root {
+        background-color: #111827;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .dark .loading-spinner {
+        border: 4px solid #374151;
+        border-top: 4px solid #3b82f6;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        margin-top: 1rem;
+        color: #6b7280;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        font-size: 14px;
+      }
+      
+      .dark .loading-text {
+        color: #9ca3af;
+      }
+      
+      /* Hide loading screen once React takes over */
+      .loaded .loading-screen {
+        display: none;
+      }
+    </style>
+    
+    <!-- Theme detection script -->
+    <script>
+      // Detect system theme preference and apply it immediately
+      (function() {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const storedTheme = localStorage.getItem('shell-theme');
+        
+        let theme = 'light';
+        
+        if (storedTheme) {
+          try {
+            const parsedTheme = JSON.parse(storedTheme);
+            theme = parsedTheme.mode === 'system' 
+              ? (mediaQuery.matches ? 'dark' : 'light')
+              : parsedTheme.mode;
+          } catch (e) {
+            // Fall back to system preference if stored theme is invalid
+            theme = mediaQuery.matches ? 'dark' : 'light';
+          }
+        } else {
+          theme = mediaQuery.matches ? 'dark' : 'light';
+        }
+        
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+        
+        // Update theme color meta tag
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', theme === 'dark' ? '#111827' : '#3b82f6');
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-DgkQSV2E.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/__federation_fn_import-CGcCI4KO.js">
+    <link rel="modulepreload" crossorigin href="/assets/index-BwWhYzy4.js">
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-a3QmZIrm.js">
+    <link rel="modulepreload" crossorigin href="/assets/index-34AiBnsD.js">
+    <link rel="stylesheet" crossorigin href="/assets/style-lenNyePo.css">
+  </head>
+  <body>
+    <!-- Root element with loading screen -->
+    <div id="root">
+      <div class="loading-screen">
+        <div style="text-align: center;">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading Shell Platform...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      // Register service worker for PWA functionality
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+    
+    <!-- Module script -->
+    
+    <!-- Fallback for browsers that don't support modules -->
+    <script nomodule>
+      document.getElementById('root').innerHTML = 
+        '<div style="text-align: center; padding: 2rem; font-family: sans-serif;">' +
+        '<h1>Browser Not Supported</h1>' +
+        '<p>This application requires a modern browser with ES6 module support.</p>' +
+        '<p>Please update your browser or try a different one.</p>' +
+        '</div>';
+    </script>
+  </body>
+</html>

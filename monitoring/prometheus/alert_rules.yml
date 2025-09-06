@@ -1,0 +1,277 @@
+# Prometheus Alert Rules for Shell Platform
+groups:
+  # System Health Alerts
+  - name: system_health
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute."
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is below 15% on {{ $labels.instance }}"
+
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Disk space is below 5% on {{ $labels.instance }}"
+
+  # Application Health Alerts
+  - name: application_health
+    rules:
+      - alert: APIGatewayDown
+        expr: up{job="api-gateway"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API Gateway is down"
+          description: "The API Gateway service has been down for more than 1 minute"
+
+      - alert: FileServiceDown
+        expr: up{job="file-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "File Service is down"
+          description: "The File Service has been down for more than 2 minutes"
+
+      - alert: ExternalAPIServiceDown
+        expr: up{job="external-api-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "External API Service is down"
+          description: "The External API Service has been down for more than 2 minutes"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on {{ $labels.instance }}"
+          description: "Error rate is above 5% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time on {{ $labels.instance }}"
+          description: "95th percentile response time is above 2 seconds for more than 5 minutes on {{ $labels.instance }}"
+
+  # Database Alerts
+  - name: database_health
+    rules:
+      - alert: DatabaseDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database is down"
+          description: "PostgreSQL database has been down for more than 1 minute"
+
+      - alert: DatabaseConnectionsHigh
+        expr: pg_stat_database_numbackends / pg_settings_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connections"
+          description: "Database connections are above 80% of max connections"
+
+      - alert: DatabaseSlowQueries
+        expr: rate(pg_stat_database_tup_fetched[5m]) / rate(pg_stat_database_tup_returned[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database slow queries detected"
+          description: "Database is experiencing slow query performance"
+
+  # Redis Alerts
+  - name: redis_health
+    rules:
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis server has been down for more than 1 minute"
+
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is above 90%"
+
+      - alert: RedisConnectionsHigh
+        expr: redis_connected_clients / redis_config_maxclients * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connections high"
+          description: "Redis connections are above 80% of max connections"
+
+  # Security Alerts
+  - name: security
+    rules:
+      - alert: UnauthorizedAccess
+        expr: rate(http_requests_total{status="401"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High unauthorized access attempts"
+          description: "More than 10 unauthorized access attempts per second detected on {{ $labels.instance }}"
+
+      - alert: SuspiciousActivity
+        expr: rate(http_requests_total{status="403"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Suspicious activity detected"
+          description: "High rate of forbidden requests detected on {{ $labels.instance }}"
+
+      - alert: VirusThreatDetected
+        expr: increase(virus_threats_detected_total[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Virus threat detected"
+          description: "Virus scanner detected {{ $value }} threats in the last 5 minutes"
+
+  # File Service Alerts
+  - name: file_service
+    rules:
+      - alert: FileUploadFailure
+        expr: rate(file_upload_failures_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High file upload failure rate"
+          description: "File upload failure rate is above 0.1 per second"
+
+      - alert: StorageQuotaHigh
+        expr: file_storage_used_bytes / file_storage_quota_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Storage quota high"
+          description: "File storage usage is above 85% of quota"
+
+      - alert: CDNErrors
+        expr: rate(cdn_errors_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CDN errors detected"
+          description: "CDN is experiencing errors at rate {{ $value }} per second"
+
+  # External API Service Alerts
+  - name: external_api
+    rules:
+      - alert: CircuitBreakerOpen
+        expr: circuit_breaker_state{state="open"} == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Circuit breaker open for {{ $labels.api }}"
+          description: "Circuit breaker for {{ $labels.api }} has been open for more than 1 minute"
+
+      - alert: APIRateLimitExceeded
+        expr: rate(api_rate_limit_exceeded_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API rate limits being exceeded"
+          description: "API rate limits are being exceeded at {{ $value }} per second"
+
+      - alert: ThirdPartyAPIDown
+        expr: third_party_api_up == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Third-party API {{ $labels.api }} is down"
+          description: "Third-party API {{ $labels.api }} has been unreachable for more than 5 minutes"
+
+  # Business Logic Alerts
+  - name: business_metrics
+    rules:
+      - alert: LowUserActivity
+        expr: rate(user_sessions_created_total[1h]) < 1
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low user activity"
+          description: "User activity is below normal levels - less than 1 session per hour"
+
+      - alert: HighChurnRate
+        expr: user_churn_rate > 10
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "High user churn rate"
+          description: "User churn rate is above 10%"
+
+      - alert: RevenueDrop
+        expr: (rate(revenue_total[1h]) / rate(revenue_total[1h] offset 24h) - 1) * 100 < -20
+        for: 2h
+        labels:
+          severity: critical
+        annotations:
+          summary: "Significant revenue drop"
+          description: "Revenue has dropped by more than 20% compared to same time yesterday"

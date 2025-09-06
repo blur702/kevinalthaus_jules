@@ -1,0 +1,141 @@
+---
+title: Claude Code Agents in Software Development Lifecycle
+---
+graph LR
+    %% SDLC Phases
+    subgraph Planning ["📋 1. Planning & Requirements"]
+        direction TB
+        BizAnalyst["business-analyst<br/>(Haiku)"]
+        SearchSpec["search-specialist<br/>(Haiku)"]
+        ContextMgr["context-manager<br/>(Opus)"]
+        QuantAnalyst["quant-analyst<br/>(Opus)"]
+        RiskMgr["risk-manager<br/>(Opus)"]
+    end
+    
+    subgraph Analysis ["🔍 2. Analysis & Design"]
+        direction TB
+        BackendArch["backend-architect<br/>(Sonnet)"]
+        CloudArch["cloud-architect<br/>(Opus)"]
+        UIUX["ui-ux-designer<br/>(Sonnet)"]
+        SecurityAud1["security-auditor<br/>(Opus)"]
+        ArchReviewer["architect-reviewer<br/>(Opus)"]
+        DataEng["data-engineer<br/>(Sonnet)"]
+        GraphQLArch["graphql-architect<br/>(Sonnet)"]
+    end
+    
+    subgraph Design ["🎨 3. System Design"]
+        direction TB
+        TerraformSpec["terraform-specialist<br/>(Sonnet)"]
+        K8sArch["kubernetes-architect<br/>(Sonnet)"]
+        DBOptim["database-optimizer<br/>(Sonnet)"]
+        NetEng["network-engineer<br/>(Sonnet)"]
+        APIDoc["api-documenter<br/>(Haiku)"]
+        MermaidExp["mermaid-expert<br/>(Sonnet)"]
+    end
+    
+    subgraph Implementation ["💻 4. Implementation"]
+        direction TB
+        PythonPro["python-pro<br/>(Sonnet)"]
+        JavaPro["java-pro<br/>(Sonnet)"]
+        JSPro["javascript-pro<br/>(Sonnet)"]
+        TSPro["typescript-pro<br/>(Sonnet)"]
+        GoPro["golang-pro<br/>(Sonnet)"]
+        RustPro["rust-pro<br/>(Sonnet)"]
+        FrontendDev["frontend-developer<br/>(Sonnet)"]
+        MobileDev["mobile-developer<br/>(Sonnet)"]
+        FlutterExp["flutter-expert<br/>(Sonnet)"]
+        UnityDev["unity-developer<br/>(Sonnet)"]
+        IOSDev["ios-developer<br/>(Sonnet)"]
+        AIEng["ai-engineer<br/>(Opus)"]
+        MLEng["ml-engineer<br/>(Sonnet)"]
+        PromptEng["prompt-engineer<br/>(Opus)"]
+    end
+    
+    subgraph Testing ["🧪 5. Testing & QA"]
+        direction TB
+        TestAuto["test-automator<br/>(Sonnet)"]
+        CodeReviewer["code-reviewer<br/>(Sonnet)"]
+        SecurityAud2["security-auditor<br/>(Opus)"]
+        PerfEng["performance-engineer<br/>(Opus)"]
+        Debugger["debugger<br/>(Sonnet)"]
+        ErrorDetective["error-detective<br/>(Sonnet)"]
+        PaymentInt["payment-integration<br/>(Sonnet)"]
+    end
+    
+    subgraph Deployment ["🚀 6. Deployment"]
+        direction TB
+        DeployEng["deployment-engineer<br/>(Sonnet)"]
+        DevOpsTrouble["devops-troubleshooter<br/>(Sonnet)"]
+        MLOpsEng["mlops-engineer<br/>(Opus)"]
+        DXOpt["dx-optimizer<br/>(Sonnet)"]
+        DBAAdmin["database-admin<br/>(Sonnet)"]
+    end
+    
+    subgraph Maintenance ["🔧 7. Maintenance & Support"]
+        direction TB
+        IncidentResp["incident-responder<br/>(Opus)"]
+        LegacyMod["legacy-modernizer<br/>(Sonnet)"]
+        CustomerSupport["customer-support<br/>(Haiku)"]
+        DataSci["data-scientist<br/>(Haiku)"]
+    end
+    
+    subgraph Documentation ["📚 8. Documentation & Training"]
+        direction TB
+        DocsArch["docs-architect<br/>(Opus)"]
+        TutorialEng["tutorial-engineer<br/>(Opus)"]
+        RefBuilder["reference-builder<br/>(Haiku)"]
+        ContentMark["content-marketer<br/>(Haiku)"]
+        SEOWriter["seo-content-writer<br/>(Sonnet)"]
+        SEOAuditor["seo-content-auditor<br/>(Sonnet)"]
+    end
+    
+    %% Flow between phases
+    Planning --> Analysis
+    Analysis --> Design  
+    Design --> Implementation
+    Implementation --> Testing
+    Testing --> Deployment
+    Deployment --> Maintenance
+    Maintenance --> Documentation
+    
+    %% Feedback loops
+    Testing -.->|"Issues Found"| Implementation
+    Deployment -.->|"Config Issues"| Design
+    Maintenance -.->|"Performance Issues"| Testing
+    Documentation -.->|"Knowledge Gaps"| Planning
+    
+    %% Cross-phase collaborations
+    ArchReviewer -.->|"Reviews"| Implementation
+    SecurityAud1 -.->|"Security Review"| Testing
+    PerfEng -.->|"Performance Review"| Implementation
+    ContextMgr -.->|"Coordinates"| Analysis
+    ContextMgr -.->|"Coordinates"| Implementation
+    ContextMgr -.->|"Coordinates"| Deployment
+    
+    %% Continuous processes (spanning multiple phases)
+    subgraph Continuous ["🔄 Continuous Processes"]
+        direction LR
+        HP["hp-pro<br/>(Sonnet)"]
+        Legal["legal-advisor<br/>(Haiku)"]
+        SalesAuto["sales-automator<br/>(Haiku)"]
+        SEOMeta["seo-meta-optimizer<br/>(Haiku)"]
+        SEOKeyword["seo-keyword-strategist<br/>(Haiku)"]
+    end
+    
+    %% Continuous processes connect to all phases
+    Continuous -.-> Planning
+    Continuous -.-> Analysis  
+    Continuous -.-> Implementation
+    Continuous -.-> Testing
+    Continuous -.-> Deployment
+    Continuous -.-> Maintenance
+    
+    %% Styling
+    classDef haiku fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef sonnet fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef opus fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef phase fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
+    classDef continuous fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class Planning,Analysis,Design,Implementation,Testing,Deployment,Maintenance,Documentation phase
+    class Continuous continuous

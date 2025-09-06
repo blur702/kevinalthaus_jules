@@ -1,0 +1,228 @@
+<testsuites id="" name="" tests="7" failures="2" skipped="0" errors="0" time="344.01797899999997">
+<testsuite name="production-site.spec.ts" timestamp="2025-09-04T20:28:04.319Z" hostname="chromium-desktop" tests="7" failures="2" skipped="0" time="328.594" errors="0">
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 1. Initial Site Load and Health Check" classname="production-site.spec.ts" time="3.3">
+<system-out>
+<![CDATA[Initial load time: 898ms
+
+=== PERFORMANCE METRICS ===
+{
+  "initialLoad": 898
+}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-b10c8--Site-Load-and-Health-Check-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 2. Login Flow - Complete Authentication Test" classname="production-site.spec.ts" time="159.794">
+<failure message="production-site.spec.ts:90:3 2. Login Flow - Complete Authentication Test" type="FAILURE">
+<![CDATA[  [chromium-desktop] › production-site.spec.ts:90:3 › Shell Platform Production Site - Comprehensive E2E Testing › 2. Login Flow - Complete Authentication Test 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.screenshot: Target page, context or browser has been closed
+
+      170 |       
+      171 |       // Take screenshot of any error state
+    > 172 |       await page.screenshot({ 
+          |                  ^
+      173 |         path: './production-test-results/login-error.png',
+      174 |         fullPage: true 
+      175 |       });
+        at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:172:18
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.screenshot: Target page, context or browser has been closed
+
+      170 |       
+      171 |       // Take screenshot of any error state
+    > 172 |       await page.screenshot({ 
+          |                  ^
+      173 |         path: './production-test-results/login-error.png',
+      174 |         fullPage: true 
+      175 |       });
+        at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:172:18
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+=== PERFORMANCE METRICS ===
+{
+  "initialLoad": 898
+}
+Login flow error: TimeoutError: page.screenshot: Timeout 15000ms exceeded.
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/video.webm]]
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/trace.zip]]
+
+=== PERFORMANCE METRICS ===
+{}
+Login flow error: TimeoutError: page.screenshot: Timeout 15000ms exceeded.
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/video.webm]]
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 3. Post-Login Navigation and Interactive Elements" classname="production-site.spec.ts" time="160.064">
+<failure message="production-site.spec.ts:181:3 3. Post-Login Navigation and Interactive Elements" type="FAILURE">
+<![CDATA[  [chromium-desktop] › production-site.spec.ts:181:3 › Shell Platform Production Site - Comprehensive E2E Testing › 3. Post-Login Navigation and Interactive Elements 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.count: Test timeout of 60000ms exceeded.
+
+      237 |     // Test all buttons
+      238 |     const buttons = page.locator('button, input[type="button"], input[type="submit"]');
+    > 239 |     const buttonCount = await buttons.count();
+          |                                       ^
+      240 |     console.log(`Found ${buttonCount} buttons to test`);
+      241 |     
+      242 |     for (let i = 0; i < Math.min(buttonCount, 5); i++) { // Test first 5 buttons
+        at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:239:39
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.count: Test timeout of 60000ms exceeded.
+
+      237 |     // Test all buttons
+      238 |     const buttons = page.locator('button, input[type="button"], input[type="submit"]');
+    > 239 |     const buttonCount = await buttons.count();
+          |                                       ^
+      240 |     console.log(`Found ${buttonCount} buttons to test`);
+      241 |     
+      242 |     for (let i = 0; i < Math.min(buttonCount, 5); i++) { // Test first 5 buttons
+        at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:239:39
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[Found 0 links to test
+
+=== PERFORMANCE METRICS ===
+{}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/video.webm]]
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/trace.zip]]
+Found 0 links to test
+
+=== PERFORMANCE METRICS ===
+{}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/video.webm]]
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 4. Form Validation Testing" classname="production-site.spec.ts" time="0.39">
+<system-out>
+<![CDATA[Found 0 forms to test
+
+=== PERFORMANCE METRICS ===
+{}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-dfa8c-g-4-Form-Validation-Testing-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 5. Visual Regression and Mobile Responsiveness" classname="production-site.spec.ts" time="0.642">
+<system-out>
+<![CDATA[
+=== PERFORMANCE METRICS ===
+{}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-58f37-n-and-Mobile-Responsiveness-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Shell Platform Production Site - Comprehensive E2E Testing › 6. Performance and Service Worker Testing" classname="production-site.spec.ts" time="4.249">
+<system-out>
+<![CDATA[Service Worker registered: true
+Web Vitals: No Web Vitals library detected
+
+=== PERFORMANCE METRICS ===
+{
+  "loadTime": 903,
+  "serviceWorker": true
+}
+
+[[ATTACHMENT|../production-test-results/production-site-Shell-Plat-b56bb--and-Service-Worker-Testing-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="7. Generate Comprehensive QA Report" classname="production-site.spec.ts" time="0.155">
+<system-out>
+<![CDATA[
+=== OVERALL ASSESSMENT ===
+Confidence Level for Release: High
+Total Issues Found: 0
+
+[[ATTACHMENT|../production-test-results/production-site-7-Generate-Comprehensive-QA-Report-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

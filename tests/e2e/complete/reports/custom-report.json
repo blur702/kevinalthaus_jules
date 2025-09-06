@@ -1,0 +1,15 @@
+{
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "duration": 13,
+    "startTime": "2025-09-03T22:10:30.520Z",
+    "endTime": "2025-09-03T22:10:30.534Z"
+  },
+  "testResults": [],
+  "performanceMetrics": [],
+  "securityIssues": [],
+  "status": "success"
+}

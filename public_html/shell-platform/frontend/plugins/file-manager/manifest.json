@@ -1,0 +1,130 @@
+{
+  "id": "file-manager",
+  "name": "File Manager",
+  "version": "1.0.0",
+  "description": "File upload, storage, and management",
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  
+  "category": "utilities",
+  "tags": ["files", "storage", "media"],
+  "icon": "folder",
+  
+  "minShellVersion": "1.0.0",
+  "dependencies": [],
+  
+  "permissions": [
+    {
+      "name": "files:manage",
+      "reason": "Manage files and folders",
+      "required": true
+    }
+  ],
+  
+  "entryPoints": {
+    "main": "index.js"
+  },
+  
+  "navigation": [
+    {
+      "id": "files",
+      "label": "Files",
+      "icon": "folder",
+      "path": "/files",
+      "position": "main",
+      "priority": 30
+    }
+  ],
+  
+  "routes": [
+    {
+      "path": "/files",
+      "component": "FileManagerPage",
+      "exact": true
+    },
+    {
+      "path": "/files/:path*",
+      "component": "FileManagerPage"
+    }
+  ],
+  
+  "requiredServices": [
+    {
+      "name": "storage",
+      "version": "1.0.0"
+    },
+    {
+      "name": "database",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "database": {
+    "tables": [
+      {
+        "name": "files",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)",
+            "nullable": false
+          },
+          {
+            "name": "path",
+            "type": "text",
+            "nullable": false
+          },
+          {
+            "name": "size",
+            "type": "bigint"
+          },
+          {
+            "name": "mime_type",
+            "type": "varchar(100)"
+          },
+          {
+            "name": "owner_id",
+            "type": "uuid"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "default": "now()"
+          }
+        ]
+      }
+    ]
+  },
+  
+  "widgets": [
+    {
+      "id": "storage-stats",
+      "name": "Storage Statistics",
+      "component": "StorageStatsWidget",
+      "zones": ["dashboard", "sidebar"]
+    }
+  ],
+  
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/files",
+      "handler": "listFiles"
+    },
+    {
+      "method": "POST",
+      "path": "/api/files/upload",
+      "handler": "uploadFile"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/files/:id",
+      "handler": "deleteFile"
+    }
+  ]
+}

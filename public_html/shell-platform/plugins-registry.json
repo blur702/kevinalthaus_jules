@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01T00:00:00Z",
+  "plugins": {
+    "core-dashboard": {
+      "id": "core-dashboard",
+      "name": "Dashboard",
+      "version": "1.0.0",
+      "description": "Core dashboard plugin providing main overview and widgets",
+      "author": "Shell Platform Team",
+      "category": "core",
+      "status": "active",
+      "required": false,
+      "dependencies": [],
+      "repository": "local",
+      "path": "dashboard",
+      "tags": ["core", "dashboard", "overview"]
+    },
+    "core-user-management": {
+      "id": "core-user-management",
+      "name": "User Management",
+      "version": "1.0.0",
+      "description": "User authentication, authorization, and management",
+      "author": "Shell Platform Team",
+      "category": "core",
+      "status": "active",
+      "required": true,
+      "dependencies": [],
+      "repository": "local",
+      "path": "user-management",
+      "tags": ["core", "users", "authentication", "security"]
+    },
+    "core-settings": {
+      "id": "core-settings",
+      "name": "Settings",
+      "version": "1.0.0",
+      "description": "System and plugin configuration management",
+      "author": "Shell Platform Team",
+      "category": "core",
+      "status": "active",
+      "required": true,
+      "dependencies": [],
+      "repository": "local",
+      "path": "settings",
+      "tags": ["core", "settings", "configuration"]
+    },
+    "analytics": {
+      "id": "analytics",
+      "name": "Analytics",
+      "version": "1.0.0",
+      "description": "Analytics and reporting dashboard",
+      "author": "Shell Platform Team",
+      "category": "business",
+      "status": "active",
+      "required": false,
+      "dependencies": ["core-dashboard"],
+      "repository": "local",
+      "path": "analytics",
+      "tags": ["analytics", "reports", "metrics"]
+    },
+    "file-manager": {
+      "id": "file-manager",
+      "name": "File Manager",
+      "version": "1.0.0",
+      "description": "File upload, storage, and management",
+      "author": "Shell Platform Team",
+      "category": "utilities",
+      "status": "active",
+      "required": false,
+      "dependencies": [],
+      "repository": "local",
+      "path": "file-manager",
+      "tags": ["files", "storage", "media"]
+    }
+  },
+  "repositories": {
+    "local": {
+      "type": "local",
+      "path": "/var/www/public_html/shell-platform/frontend/plugins"
+    },
+    "official": {
+      "type": "remote",
+      "url": "https://plugins.shellplatform.io/api/v1",
+      "apiKey": "${SHELL_PLATFORM_API_KEY}"
+    },
+    "community": {
+      "type": "remote",
+      "url": "https://community.shellplatform.io/plugins",
+      "apiKey": null
+    }
+  },
+  "categories": {
+    "core": {
+      "name": "Core",
+      "description": "Essential system plugins",
+      "icon": "settings"
+    },
+    "business": {
+      "name": "Business",
+      "description": "Business and analytics tools",
+      "icon": "trending-up"
+    },
+    "utilities": {
+      "name": "Utilities",
+      "description": "Utility and helper plugins",
+      "icon": "tool"
+    },
+    "communication": {
+      "name": "Communication",
+      "description": "Messaging and notification plugins",
+      "icon": "message-circle"
+    },
+    "integration": {
+      "name": "Integration",
+      "description": "Third-party service integrations",
+      "icon": "link"
+    },
+    "development": {
+      "name": "Development",
+      "description": "Developer tools and utilities",
+      "icon": "code"
+    }
+  }
+}

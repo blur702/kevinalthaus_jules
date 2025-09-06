@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  api-gateway-dev:
+    build:
+      context: .
+      target: development
+    container_name: shell-api-gateway-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - JWT_SECRET=dev-secret-key-change-in-production
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+      - RATE_LIMIT_WINDOW=900000
+      - RATE_LIMIT_REQUESTS=1000
+      - CIRCUIT_BREAKER_TIMEOUT=5000
+      - CIRCUIT_BREAKER_THRESHOLD=80
+      - LOG_LEVEL=debug
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - DATA_SERVICE_URL=http://data-service:3002
+      - FILE_SERVICE_URL=http://file-service:3003
+      - EXTERNAL_SERVICE_URL=http://external-service:3004
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - shell-platform-dev
+    depends_on:
+      - auth-service-dev
+      - data-service-dev
+      - file-service-dev
+      - external-service-dev
+
+  # Mock services for development
+  auth-service-dev:
+    image: nginx:alpine
+    container_name: mock-auth-service-dev
+    ports:
+      - "3001:80"
+    volumes:
+      - ./mock-services/auth:/usr/share/nginx/html
+    networks:
+      - shell-platform-dev
+
+  data-service-dev:
+    image: nginx:alpine
+    container_name: mock-data-service-dev
+    ports:
+      - "3002:80"
+    volumes:
+      - ./mock-services/data:/usr/share/nginx/html
+    networks:
+      - shell-platform-dev
+
+  file-service-dev:
+    image: nginx:alpine
+    container_name: mock-file-service-dev
+    ports:
+      - "3003:80"
+    volumes:
+      - ./mock-services/files:/usr/share/nginx/html
+    networks:
+      - shell-platform-dev
+
+  external-service-dev:
+    image: nginx:alpine
+    container_name: mock-external-service-dev
+    ports:
+      - "3004:80"
+    volumes:
+      - ./mock-services/external:/usr/share/nginx/html
+    networks:
+      - shell-platform-dev
+
+networks:
+  shell-platform-dev:
+    driver: bridge

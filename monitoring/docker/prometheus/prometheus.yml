@@ -1,0 +1,93 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+
+  # Node Exporter for host metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 5s
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 5s
+
+  # Application metrics from shell platform
+  - job_name: 'shell-platform-api-gateway'
+    static_configs:
+      - targets: ['172.20.0.10:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  - job_name: 'shell-platform-auth-service'
+    static_configs:
+      - targets: ['172.20.0.11:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  - job_name: 'shell-platform-data-service'
+    static_configs:
+      - targets: ['172.20.0.12:3002']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  - job_name: 'shell-platform-file-service'
+    static_configs:
+      - targets: ['172.20.0.13:3003']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  - job_name: 'shell-platform-external-service'
+    static_configs:
+      - targets: ['172.20.0.14:3004']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # PostgreSQL exporter (if available)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['172.20.0.20:5432']
+    scrape_interval: 30s
+
+  # Redis exporter (if available)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['172.20.0.21:6379']
+    scrape_interval: 30s
+
+  # Nginx metrics (if nginx-prometheus-exporter is enabled)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['172.20.0.2:9113']
+    scrape_interval: 15s
+
+  # Elasticsearch metrics
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch:9200']
+    metrics_path: '/_prometheus/metrics'
+    scrape_interval: 30s
+
+  # Additional monitoring stack services
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    scrape_interval: 30s

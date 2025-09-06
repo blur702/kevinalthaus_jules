@@ -1,0 +1,672 @@
+{
+  "config": {
+    "configFile": "/var/www/public_html/shell-platform/frontend/shell/playwright.production.config.ts",
+    "rootDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "./production-reports/html"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./production-reports/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "./production-reports/results.xml"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox-desktop",
+        "name": "firefox-desktop",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit-desktop",
+        "name": "webkit-desktop",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/var/www/public_html/shell-platform/frontend/shell/production-test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge-desktop",
+        "name": "edge-desktop",
+        "testDir": "/var/www/public_html/shell-platform/frontend/shell/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "production-site.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "production-site.spec.ts",
+      "file": "production-site.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "7. Generate Comprehensive QA Report",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 155,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "\n=== OVERALL ASSESSMENT ===\n"
+                    },
+                    {
+                      "text": "Confidence Level for Release: High\n"
+                    },
+                    {
+                      "text": "Total Issues Found: 0\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-09-04T20:33:48.069Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-7-Generate-Comprehensive-QA-Report-chromium-desktop/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "02e3cb14bb4714632be4-aa6ce0015930b42ff7c0",
+          "file": "production-site.spec.ts",
+          "line": 441,
+          "column": 1
+        }
+      ],
+      "suites": [
+        {
+          "title": "Shell Platform Production Site - Comprehensive E2E Testing",
+          "file": "production-site.spec.ts",
+          "line": 29,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Initial Site Load and Health Check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3300,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Initial load time: 898ms\n"
+                        },
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{\n  \"initialLoad\": 898\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:28:04.833Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-b10c8--Site-Load-and-Health-Check-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-5b8789a9fbd733f30bac",
+              "file": "production-site.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "2. Login Flow - Complete Authentication Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 79384,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts",
+                            "column": 18,
+                            "line": 172
+                          },
+                          "message": "Error: page.screenshot: Target page, context or browser has been closed\n\n  170 |       \n  171 |       // Take screenshot of any error state\n> 172 |       await page.screenshot({ \n      |                  ^\n  173 |         path: './production-test-results/login-error.png',\n  174 |         fullPage: true \n  175 |       });\n    at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:172:18"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{\n  \"initialLoad\": 898\n}\n"
+                        },
+                        {
+                          "text": "Login flow error: TimeoutError: page.screenshot: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:28:08.285Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 80410,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts",
+                            "column": 18,
+                            "line": 172
+                          },
+                          "message": "Error: page.screenshot: Target page, context or browser has been closed\n\n  170 |       \n  171 |       // Take screenshot of any error state\n> 172 |       await page.screenshot({ \n      |                  ^\n  173 |         path: './production-test-results/login-error.png',\n  174 |         fullPage: true \n  175 |       });\n    at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:172:18"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{}\n"
+                        },
+                        {
+                          "text": "Login flow error: TimeoutError: page.screenshot: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-09-04T20:29:31.131Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-3b4c0-omplete-Authentication-Test-chromium-desktop-retry1/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-dd48d6a83fa86443f4e5",
+              "file": "production-site.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "3. Post-Login Navigation and Interactive Elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 80178,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts",
+                            "column": 39,
+                            "line": 239
+                          },
+                          "message": "Error: locator.count: Test timeout of 60000ms exceeded.\n\n  237 |     // Test all buttons\n  238 |     const buttons = page.locator('button, input[type=\"button\"], input[type=\"submit\"]');\n> 239 |     const buttonCount = await buttons.count();\n      |                                       ^\n  240 |     console.log(`Found ${buttonCount} buttons to test`);\n  241 |     \n  242 |     for (let i = 0; i < Math.min(buttonCount, 5); i++) { // Test first 5 buttons\n    at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:239:39"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Found 0 links to test\n"
+                        },
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:30:55.111Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 79886,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts",
+                            "column": 39,
+                            "line": 239
+                          },
+                          "message": "Error: locator.count: Test timeout of 60000ms exceeded.\n\n  237 |     // Test all buttons\n  238 |     const buttons = page.locator('button, input[type=\"button\"], input[type=\"submit\"]');\n> 239 |     const buttonCount = await buttons.count();\n      |                                       ^\n  240 |     console.log(`Found ${buttonCount} buttons to test`);\n  241 |     \n  242 |     for (let i = 0; i < Math.min(buttonCount, 5); i++) { // Test first 5 buttons\n    at /var/www/public_html/shell-platform/frontend/shell/tests/production-site.spec.ts:239:39"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Found 0 links to test\n"
+                        },
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-09-04T20:32:18.972Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-21019-on-and-Interactive-Elements-chromium-desktop-retry1/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-b458a8408a6b5f799d1f",
+              "file": "production-site.spec.ts",
+              "line": 181,
+              "column": 3
+            },
+            {
+              "title": "4. Form Validation Testing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 390,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Found 0 forms to test\n"
+                        },
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:33:42.526Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-dfa8c-g-4-Form-Validation-Testing-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-55e5888db304767e988c",
+              "file": "production-site.spec.ts",
+              "line": 276,
+              "column": 3
+            },
+            {
+              "title": "5. Visual Regression and Mobile Responsiveness",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 642,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:33:43.024Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-58f37-n-and-Mobile-Responsiveness-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-c77d34668388d29ad273",
+              "file": "production-site.spec.ts",
+              "line": 338,
+              "column": 3
+            },
+            {
+              "title": "6. Performance and Service Worker Testing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4249,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Service Worker registered: true\n"
+                        },
+                        {
+                          "text": "Web Vitals: No Web Vitals library detected\n"
+                        },
+                        {
+                          "text": "\n=== PERFORMANCE METRICS ===\n"
+                        },
+                        {
+                          "text": "{\n  \"loadTime\": 903,\n  \"serviceWorker\": true\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-04T20:33:43.750Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/var/www/public_html/shell-platform/frontend/shell/production-test-results/production-site-Shell-Plat-b56bb--and-Service-Worker-Testing-chromium-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "02e3cb14bb4714632be4-70bd582b3990521a8454",
+              "file": "production-site.spec.ts",
+              "line": 369,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-04T20:28:04.285Z",
+    "duration": 344017.979,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

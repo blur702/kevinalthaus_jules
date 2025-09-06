@@ -1,0 +1,236 @@
+import React, { useState, useEffect } from 'react';
+import { {{#if (eq template 'dashboard')}}BarChart3, TrendingUp{{else if (eq template 'crud')}}Users, Plus{{else if (eq template 'settings')}}Settings, Save{{else}}Zap, Sparkles{{/if}} } from 'lucide-react';
+import clsx from 'clsx';
+
+interface {{pascalCase}}PluginProps {
+  pluginAPI?: any;
+}
+
+const {{pascalCase}}Plugin: React.FC<{{pascalCase}}PluginProps> = ({ pluginAPI }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  {{#if (eq template 'dashboard')}}
+  const [metrics, setMetrics] = useState<any[]>([]);
+  {{else if (eq template 'crud')}}
+  const [items, setItems] = useState<any[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  {{else if (eq template 'settings')}}
+  const [settings, setSettings] = useState<Record<string, any>>({});
+  {{else}}
+  const [data, setData] = useState<any>(null);
+  {{/if}}
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      {{#if (eq template 'dashboard')}}
+      // Mock dashboard data
+      setMetrics([
+        { id: 1, title: 'Total Items', value: '1,234', change: '+12%' },
+        { id: 2, title: 'Active Users', value: '567', change: '+5%' },
+        { id: 3, title: 'Revenue', value: '$12,345', change: '+8%' }
+      ]);
+      {{else if (eq template 'crud')}}
+      // Mock CRUD data
+      setItems([
+        { id: 1, name: 'Item 1', status: 'active', createdAt: '2024-01-15' },
+        { id: 2, name: 'Item 2', status: 'inactive', createdAt: '2024-01-20' },
+        { id: 3, name: 'Item 3', status: 'active', createdAt: '2024-01-25' }
+      ]);
+      {{else if (eq template 'settings')}}
+      // Mock settings data
+      setSettings({
+        theme: 'light',
+        notifications: true,
+        autoSave: false,
+        language: 'en'
+      });
+      {{else}}
+      // Mock generic data
+      setData({
+        message: 'Welcome to {{displayName}}!',
+        timestamp: new Date().toISOString(),
+        status: 'ready'
+      });
+      {{/if}}
+      
+    } catch (error) {
+      console.error('Failed to load data:', error);
+      pluginAPI?.showNotification('Failed to load data', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAction = async () => {
+    try {
+      pluginAPI?.showNotification('Action completed successfully!', 'success');
+    } catch (error) {
+      pluginAPI?.showNotification('Action failed', 'error');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading {{displayName}}...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              {{#if (eq template 'dashboard')}}
+              <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
+              {{else if (eq template 'crud')}}
+              <Users className="h-8 w-8 text-blue-600 mr-3" />
+              {{else if (eq template 'settings')}}
+              <Settings className="h-8 w-8 text-blue-600 mr-3" />
+              {{else}}
+              <Zap className="h-8 w-8 text-blue-600 mr-3" />
+              {{/if}}
+              {{displayName}}
+            </h1>
+            <p className="text-gray-600 mt-1">{{description}}</p>
+          </div>
+          
+          <button
+            onClick={handleAction}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {{#if (eq template 'dashboard')}}
+            <TrendingUp className="h-4 w-4" />
+            <span>Refresh Data</span>
+            {{else if (eq template 'crud')}}
+            <Plus className="h-4 w-4" />
+            <span>Add New</span>
+            {{else if (eq template 'settings')}}
+            <Save className="h-4 w-4" />
+            <span>Save Settings</span>
+            {{else}}
+            <Sparkles className="h-4 w-4" />
+            <span>Execute Action</span>
+            {{/if}}
+          </button>
+        </div>
+
+        {/* Main Content */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          {{#if (eq template 'dashboard')}}
+          {/* Dashboard Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {metrics.map((metric) => (
+              <div key={metric.id} className="p-6 border border-gray-200 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-600">{metric.title}</h3>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{metric.value}</p>
+                <p className="text-green-600 text-sm mt-2">{metric.change}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Chart Area</h3>
+            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+              <p className="text-gray-500">Chart visualization would go here</p>
+            </div>
+          </div>
+          {{else if (eq template 'crud')}}
+          {/* CRUD Content */}
+          <div className="space-y-4">
+            {items.map((item) => (
+              <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">{item.name}</h3>
+                  <p className="text-sm text-gray-500">Created: {item.createdAt}</p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className={clsx(
+                    'px-2 py-1 rounded-full text-xs font-medium',
+                    item.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  )}>
+                    {item.status}
+                  </span>
+                  <button className="text-blue-600 hover:text-blue-800">Edit</button>
+                  <button className="text-red-600 hover:text-red-800">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {{else if (eq template 'settings')}}
+          {/* Settings Content */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+              <select
+                value={settings.theme}
+                onChange={(e) => setSettings({ ...settings, theme: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="auto">Auto</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={settings.notifications}
+                  onChange={(e) => setSettings({ ...settings, notifications: e.target.checked })}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Enable Notifications</span>
+              </label>
+            </div>
+            
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={settings.autoSave}
+                  onChange={(e) => setSettings({ ...settings, autoSave: e.target.checked })}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Auto Save</span>
+              </label>
+            </div>
+          </div>
+          {{else}}
+          {/* Generic Content */}
+          <div className="text-center py-12">
+            <Sparkles className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{{displayName}}</h2>
+            <p className="text-gray-600 mb-6">{{description}}</p>
+            
+            {data && (
+              <div className="bg-gray-50 rounded-lg p-4 max-w-md mx-auto">
+                <pre className="text-sm text-gray-700 text-left">
+                  {JSON.stringify(data, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default {{pascalCase}}Plugin;

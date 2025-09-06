@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Auth Service</title>
+</head>
+<body>
+    <h1>Mock Auth Service</h1>
+    <p>This is a placeholder for the auth service.</p>
+    <script>
+        // Simple mock API responses
+        if (window.location.pathname.includes('/login')) {
+            document.body.innerHTML = JSON.stringify({
+                status: 'success',
+                token: 'mock-jwt-token',
+                user: { id: '1', email: 'user@example.com' }
+            });
+        }
+    </script>
+</body>
+</html>

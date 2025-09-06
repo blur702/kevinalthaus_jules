@@ -1,0 +1,128 @@
+{
+  "id": "user-management",
+  "name": "User Management",
+  "version": "1.0.0",
+  "description": "User administration and profile management",
+  "author": "Shell Platform",
+  "license": "MIT",
+  "category": "administration",
+  
+  "hooks": {
+    "menu": [
+      {
+        "id": "users-menu",
+        "label": "Users",
+        "icon": "people",
+        "path": "/users",
+        "position": 10,
+        "parent": null,
+        "permission": "users.view"
+      },
+      {
+        "id": "profile-menu", 
+        "label": "Profile",
+        "icon": "person",
+        "path": "/profile",
+        "position": 100,
+        "parent": "user-menu"
+      }
+    ],
+    "routes": [
+      {
+        "path": "/users",
+        "component": "UserListView",
+        "auth": true,
+        "permission": "users.view"
+      },
+      {
+        "path": "/users/:id",
+        "component": "UserDetailView",
+        "auth": true,
+        "permission": "users.view"
+      },
+      {
+        "path": "/profile",
+        "component": "ProfileView",
+        "auth": true
+      }
+    ],
+    "actions": [
+      "user.created",
+      "user.updated",
+      "user.deleted",
+      "user.login",
+      "user.logout"
+    ],
+    "filters": [
+      "user.can_edit",
+      "user.display_name",
+      "user.avatar"
+    ]
+  },
+  
+  "services": [
+    "auth",
+    "database",
+    "storage",
+    "events",
+    "notification"
+  ],
+  
+  "permissions": [
+    "users.view",
+    "users.create",
+    "users.edit",
+    "users.delete",
+    "profile.edit"
+  ],
+  
+  "dependencies": {
+    "plugins": [],
+    "npm": {}
+  },
+  
+  "database": {
+    "tables": [
+      {
+        "name": "user_profiles",
+        "columns": [
+          "user_id UUID PRIMARY KEY REFERENCES users(id)",
+          "avatar_url TEXT",
+          "bio TEXT",
+          "preferences JSON",
+          "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+      },
+      {
+        "name": "user_sessions",
+        "columns": [
+          "id UUID PRIMARY KEY",
+          "user_id UUID REFERENCES users(id)",
+          "token TEXT UNIQUE",
+          "ip_address VARCHAR(45)",
+          "user_agent TEXT",
+          "expires_at TIMESTAMP",
+          "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+      }
+    ]
+  },
+  
+  "settings": {
+    "allowSelfRegistration": {
+      "type": "boolean",
+      "default": true,
+      "label": "Allow Self Registration"
+    },
+    "requireEmailVerification": {
+      "type": "boolean",
+      "default": true,
+      "label": "Require Email Verification"
+    },
+    "sessionTimeout": {
+      "type": "number",
+      "default": 3600000,
+      "label": "Session Timeout (ms)"
+    }
+  }
+}

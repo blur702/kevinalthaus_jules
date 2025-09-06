@@ -1,0 +1,96 @@
+{
+  "id": "dashboard",
+  "name": "Dashboard",
+  "version": "1.0.0",
+  "description": "Main dashboard plugin providing overview and widgets",
+  "author": "Shell Platform",
+  "license": "MIT",
+  "category": "core",
+  
+  "hooks": {
+    "menu": [
+      {
+        "id": "dashboard-menu",
+        "label": "Dashboard",
+        "icon": "dashboard",
+        "path": "/dashboard",
+        "position": 1,
+        "parent": null
+      }
+    ],
+    "routes": [
+      {
+        "path": "/dashboard",
+        "component": "DashboardView",
+        "exact": true,
+        "auth": true
+      }
+    ],
+    "widgets": [
+      {
+        "id": "stats-widget",
+        "zone": "dashboard-main",
+        "component": "StatsWidget",
+        "priority": 10
+      }
+    ],
+    "actions": [
+      "dashboard.loaded",
+      "dashboard.refresh"
+    ],
+    "filters": [
+      "dashboard.data",
+      "dashboard.widgets"
+    ]
+  },
+  
+  "services": [
+    "auth",
+    "database",
+    "api",
+    "cache",
+    "events"
+  ],
+  
+  "permissions": [
+    "dashboard.view",
+    "dashboard.edit"
+  ],
+  
+  "dependencies": {
+    "plugins": [],
+    "npm": {
+      "recharts": "^2.5.0"
+    }
+  },
+  
+  "database": {
+    "tables": [
+      {
+        "name": "dashboard_widgets",
+        "columns": [
+          "id UUID PRIMARY KEY",
+          "user_id UUID REFERENCES users(id)",
+          "widget_type VARCHAR(50)",
+          "position JSON",
+          "settings JSON",
+          "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ]
+      }
+    ]
+  },
+  
+  "settings": {
+    "refreshInterval": {
+      "type": "number",
+      "default": 30000,
+      "label": "Dashboard Refresh Interval (ms)"
+    },
+    "defaultLayout": {
+      "type": "select",
+      "options": ["grid", "list", "cards"],
+      "default": "grid",
+      "label": "Default Layout"
+    }
+  }
+}

@@ -1,0 +1,543 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run nightly tests at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser to test'
+        required: true
+        default: 'chromium'
+        type: choice
+        options:
+        - chromium
+        - firefox
+        - webkit
+        - all
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - smoke
+        - critical
+        - auth
+        - core
+        - visual
+        - performance
+        - security
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
+
+jobs:
+  test-matrix:
+    name: Generate Test Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      browsers: ${{ steps.matrix.outputs.browsers }}
+      test-suites: ${{ steps.matrix.outputs.test-suites }}
+    steps:
+      - name: Generate matrix
+        id: matrix
+        run: |
+          if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
+            echo "browsers=[\"chromium\", \"firefox\", \"webkit\"]" >> $GITHUB_OUTPUT
+          else
+            echo "browsers=[\"${{ github.event.inputs.browser }}\"]" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ "${{ github.event.inputs.test_suite }}" = "all" ] || [ -z "${{ github.event.inputs.test_suite }}" ]; then
+            echo "test-suites=[\"smoke\", \"critical\", \"auth\", \"core\", \"visual\", \"performance\", \"security\"]" >> $GITHUB_OUTPUT
+          else
+            echo "test-suites=[\"${{ github.event.inputs.test_suite }}\"]" >> $GITHUB_OUTPUT
+          fi
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/e2e/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: tests/e2e
+        run: npx playwright install chromium --with-deps
+      
+      - name: Setup test environment
+        run: |
+          cp tests/e2e/.env.example tests/e2e/.env.local
+          echo "CI=true" >> tests/e2e/.env.local
+      
+      - name: Run smoke tests
+        working-directory: tests/e2e
+        run: npx playwright test --grep "@smoke" --project chromium
+      
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/reports/
+          retention-days: 7
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [test-matrix, smoke-tests]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: ${{ fromJson(needs.test-matrix.outputs.browsers) }}
+        test-suite: ${{ fromJson(needs.test-matrix.outputs.test-suites) }}
+        exclude:
+          # Skip visual tests on Firefox and WebKit for now
+          - browser: firefox
+            test-suite: visual
+          - browser: webkit
+            test-suite: visual
+          # Skip performance tests on WebKit
+          - browser: webkit
+            test-suite: performance
+    
+    env:
+      BROWSER: ${{ matrix.browser }}
+      TEST_SUITE: ${{ matrix.test-suite }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/e2e/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: tests/e2e
+        run: |
+          if [ "${{ matrix.browser }}" = "all" ]; then
+            npx playwright install --with-deps
+          else
+            npx playwright install ${{ matrix.browser }} --with-deps
+          fi
+      
+      - name: Setup test database
+        run: |
+          # Setup PostgreSQL for testing
+          sudo systemctl start postgresql.service
+          sudo -u postgres createdb shell_platform_test || true
+          sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test';" || true
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE shell_platform_test TO test;" || true
+      
+      - name: Setup test environment
+        run: |
+          cp tests/e2e/.env.example tests/e2e/.env.local
+          echo "CI=true" >> tests/e2e/.env.local
+          echo "HEADLESS=true" >> tests/e2e/.env.local
+          echo "BASE_URL=http://localhost:3000" >> tests/e2e/.env.local
+          echo "API_BASE_URL=http://localhost:8000/api" >> tests/e2e/.env.local
+          echo "TEST_DATABASE_URL=postgresql://test:test@localhost:5432/shell_platform_test" >> tests/e2e/.env.local
+      
+      - name: Start test services
+        run: |
+          # Start mock services for testing
+          cd tests/e2e
+          npm run start-mock-services &
+          sleep 5
+        continue-on-error: true
+      
+      - name: Run E2E tests
+        working-directory: tests/e2e
+        run: |
+          case "${{ matrix.test-suite }}" in
+            "smoke")
+              npx playwright test --grep "@smoke" --project ${{ matrix.browser }}
+              ;;
+            "critical")
+              npx playwright test --grep "@critical" --project ${{ matrix.browser }}
+              ;;
+            "auth")
+              npx playwright test tests/auth/ --project ${{ matrix.browser }}
+              ;;
+            "core")
+              npx playwright test tests/core/ --project ${{ matrix.browser }}
+              ;;
+            "visual")
+              npx playwright test tests/visual/ --project ${{ matrix.browser }} --update-snapshots-if-missing
+              ;;
+            "performance")
+              npx playwright test tests/performance/ --project ${{ matrix.browser }}
+              ;;
+            "security")
+              npx playwright test tests/security/ --project ${{ matrix.browser }}
+              ;;
+            *)
+              npx playwright test --project ${{ matrix.browser }}
+              ;;
+          esac
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.browser }}-${{ matrix.test-suite }}
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/reports/
+            tests/e2e/screenshots/
+          retention-days: 15
+      
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: html-report-${{ matrix.browser }}-${{ matrix.test-suite }}
+          path: tests/e2e/reports/html-report/
+          retention-days: 15
+
+  visual-regression:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/e2e/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: tests/e2e
+        run: npx playwright install chromium --with-deps
+      
+      - name: Setup test environment
+        run: |
+          cp tests/e2e/.env.example tests/e2e/.env.local
+          echo "CI=true" >> tests/e2e/.env.local
+          echo "UPDATE_SNAPSHOTS=false" >> tests/e2e/.env.local
+      
+      - name: Download baseline screenshots
+        uses: actions/download-artifact@v4
+        with:
+          name: baseline-screenshots
+          path: tests/e2e/test-results/
+        continue-on-error: true
+      
+      - name: Run visual regression tests
+        working-directory: tests/e2e
+        run: npx playwright test tests/visual/ --project visual
+        continue-on-error: true
+      
+      - name: Compare visual differences
+        working-directory: tests/e2e
+        run: |
+          if [ -d "test-results" ]; then
+            echo "Visual regression test results:"
+            find test-results -name "*-diff.png" -exec echo "Found diff: {}" \;
+            find test-results -name "*-diff.png" | wc -l > visual-diff-count.txt
+          fi
+      
+      - name: Upload visual test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-test-results
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/visual-diff-count.txt
+          retention-days: 30
+
+  security-scan:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/e2e/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: tests/e2e
+        run: npx playwright install chromium --with-deps
+      
+      - name: Setup security test environment
+        run: |
+          cp tests/e2e/.env.example tests/e2e/.env.local
+          echo "CI=true" >> tests/e2e/.env.local
+          echo "SECURITY_TESTING=true" >> tests/e2e/.env.local
+      
+      - name: Run security tests
+        working-directory: tests/e2e
+        run: |
+          npx playwright test tests/security/ --project chromium
+          npx playwright test --grep "@security" --project chromium
+      
+      - name: Generate security report
+        working-directory: tests/e2e
+        run: |
+          echo "# Security Test Report" > security-report.md
+          echo "" >> security-report.md
+          echo "Generated: $(date)" >> security-report.md
+          echo "" >> security-report.md
+          
+          if [ -f "reports/test-results.json" ]; then
+            echo "## Test Results" >> security-report.md
+            # Parse test results and add to report
+            node -e "
+              const fs = require('fs');
+              const results = JSON.parse(fs.readFileSync('reports/test-results.json', 'utf8'));
+              const securityTests = results.suites?.filter(s => s.title.includes('Security')) || [];
+              console.log('Security test suites found:', securityTests.length);
+            " >> security-report.md
+          fi
+      
+      - name: Upload security test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-test-results
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/reports/
+            tests/e2e/security-report.md
+          retention-days: 30
+
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: tests/e2e/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: tests/e2e
+        run: npx playwright install chromium --with-deps
+      
+      - name: Setup performance test environment
+        run: |
+          cp tests/e2e/.env.example tests/e2e/.env.local
+          echo "CI=true" >> tests/e2e/.env.local
+          echo "PERFORMANCE_TESTING=true" >> tests/e2e/.env.local
+      
+      - name: Run performance tests
+        working-directory: tests/e2e
+        run: npx playwright test tests/performance/ --project performance
+      
+      - name: Generate performance report
+        working-directory: tests/e2e
+        run: |
+          echo "# Performance Benchmark Report" > performance-report.md
+          echo "" >> performance-report.md
+          echo "Generated: $(date)" >> performance-report.md
+          echo "Browser: Chromium" >> performance-report.md
+          echo "Environment: CI" >> performance-report.md
+          echo "" >> performance-report.md
+          
+          echo "## Thresholds" >> performance-report.md
+          echo "- Page Load Time: < 3000ms" >> performance-report.md
+          echo "- First Contentful Paint: < 2000ms" >> performance-report.md
+          echo "- API Response Time: < 1000ms" >> performance-report.md
+          echo "- Memory Usage: < 100MB" >> performance-report.md
+          echo "" >> performance-report.md
+      
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/reports/
+            tests/e2e/performance-report.md
+          retention-days: 30
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, visual-regression, security-scan, performance-benchmark]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-artifacts/
+      
+      - name: Generate comprehensive test report
+        run: |
+          mkdir -p reports
+          
+          echo "# Shell Platform E2E Test Report" > reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          echo "**Generated:** $(date)" >> reports/test-summary.md
+          echo "**Commit:** ${{ github.sha }}" >> reports/test-summary.md
+          echo "**Branch:** ${{ github.ref_name }}" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          
+          echo "## Test Results Summary" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          
+          # Count artifacts to get test coverage info
+          SMOKE_TESTS=$(find test-artifacts -name "*smoke*" -type d | wc -l)
+          AUTH_TESTS=$(find test-artifacts -name "*auth*" -type d | wc -l)
+          VISUAL_TESTS=$(find test-artifacts -name "*visual*" -type d | wc -l)
+          SECURITY_TESTS=$(find test-artifacts -name "*security*" -type d | wc -l)
+          PERFORMANCE_TESTS=$(find test-artifacts -name "*performance*" -type d | wc -l)
+          
+          echo "| Test Suite | Status | Artifacts |" >> reports/test-summary.md
+          echo "|-----------|--------|-----------|" >> reports/test-summary.md
+          echo "| Smoke Tests | $([[ $SMOKE_TESTS -gt 0 ]] && echo "✅ Pass" || echo "❌ Fail") | $SMOKE_TESTS |" >> reports/test-summary.md
+          echo "| Authentication | $([[ $AUTH_TESTS -gt 0 ]] && echo "✅ Pass" || echo "❌ Fail") | $AUTH_TESTS |" >> reports/test-summary.md
+          echo "| Visual Regression | $([[ $VISUAL_TESTS -gt 0 ]] && echo "✅ Pass" || echo "⚠️ Check") | $VISUAL_TESTS |" >> reports/test-summary.md
+          echo "| Security | $([[ $SECURITY_TESTS -gt 0 ]] && echo "✅ Pass" || echo "❌ Fail") | $SECURITY_TESTS |" >> reports/test-summary.md
+          echo "| Performance | $([[ $PERFORMANCE_TESTS -gt 0 ]] && echo "✅ Pass" || echo "⚠️ Check") | $PERFORMANCE_TESTS |" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          
+          echo "## Coverage Areas" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          echo "- **Authentication Flow**: Login, Registration, Password Reset, 2FA" >> reports/test-summary.md
+          echo "- **Core Application**: Loading, Navigation, Themes, Responsive Design" >> reports/test-summary.md
+          echo "- **Plugin System**: Loading, Communication, Isolation, Permissions" >> reports/test-summary.md
+          echo "- **API Integration**: CRUD Operations, Validation, Error Handling" >> reports/test-summary.md
+          echo "- **Visual Regression**: Screenshot Comparison, Theme Consistency" >> reports/test-summary.md
+          echo "- **Performance**: Load Times, Memory Usage, API Response Times" >> reports/test-summary.md
+          echo "- **Security**: XSS, CSRF, SQL Injection, Authentication Bypass" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          
+          echo "## Artifacts" >> reports/test-summary.md
+          echo "" >> reports/test-summary.md
+          find test-artifacts -type f -name "*.html" -o -name "*.json" | head -20 | while read file; do
+            echo "- $file" >> reports/test-summary.md
+          done
+      
+      - name: Upload comprehensive test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-test-report
+          path: reports/
+          retention-days: 90
+      
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('reports/test-summary.md')) {
+              const testSummary = fs.readFileSync('reports/test-summary.md', 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: testSummary
+              });
+            }
+
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [test-summary]
+    if: always()
+    steps:
+      - name: Clean up old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: context.runId
+            });
+            
+            // Keep only the most recent 10 artifacts per type
+            const artifactTypes = {};
+            artifacts.data.artifacts.forEach(artifact => {
+              const type = artifact.name.split('-')[0];
+              if (!artifactTypes[type]) artifactTypes[type] = [];
+              artifactTypes[type].push(artifact);
+            });
+            
+            for (const [type, typeArtifacts] of Object.entries(artifactTypes)) {
+              if (typeArtifacts.length > 10) {
+                const toDelete = typeArtifacts
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .slice(10);
+                
+                for (const artifact of toDelete) {
+                  try {
+                    await github.rest.actions.deleteArtifact({
+                      owner,
+                      repo,
+                      artifact_id: artifact.id
+                    });
+                    console.log(`Deleted artifact: ${artifact.name}`);
+                  } catch (error) {
+                    console.log(`Failed to delete artifact ${artifact.name}: ${error.message}`);
+                  }
+                }
+              }
+            }

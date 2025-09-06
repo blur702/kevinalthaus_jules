@@ -1,0 +1,278 @@
+version: '3.9'
+
+networks:
+  shell-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres-data:
+  redis-data:
+  file-storage:
+  nginx-certs:
+
+services:
+  # Infrastructure Layer
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: shell-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-certs:/etc/letsencrypt
+      - ./frontend/shell/dist:/usr/share/nginx/html/shell:ro
+      - ./frontend/plugins:/usr/share/nginx/html/plugins:ro
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.2
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: shell-api-gateway
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      REDIS_URL: redis://redis:6379
+      AUTH_SERVICE_URL: http://auth-service:3001
+      DATA_SERVICE_URL: http://data-service:3002
+      FILE_SERVICE_URL: http://file-service:3003
+      EXTERNAL_SERVICE_URL: http://external-service:3004
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-15}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-100}
+    volumes:
+      - ./backend/api-gateway:/app
+      - /app/node_modules
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.10
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./backend/services/auth
+      dockerfile: Dockerfile
+    container_name: shell-auth-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRY: ${JWT_EXPIRY:-15m}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      REDIS_URL: redis://redis:6379
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
+      MAX_LOGIN_ATTEMPTS: ${MAX_LOGIN_ATTEMPTS:-5}
+      LOCKOUT_TIME: ${LOCKOUT_TIME:-30}
+    volumes:
+      - ./backend/services/auth:/app
+      - /app/node_modules
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.11
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Data Service
+  data-service:
+    build:
+      context: ./backend/services/data
+      dockerfile: Dockerfile
+    container_name: shell-data-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3002
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379
+      ENABLE_QUERY_LOGGING: ${ENABLE_QUERY_LOGGING:-false}
+      MAX_QUERY_DEPTH: ${MAX_QUERY_DEPTH:-5}
+    volumes:
+      - ./backend/services/data:/app
+      - /app/node_modules
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.12
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # File Service
+  file-service:
+    build:
+      context: ./backend/services/file
+      dockerfile: Dockerfile
+    container_name: shell-file-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3003
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+      STORAGE_PATH: /app/storage
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      ALLOWED_EXTENSIONS: ${ALLOWED_EXTENSIONS:-jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx}
+      CDN_URL: ${CDN_URL:-}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      ENABLE_VIRUS_SCAN: ${ENABLE_VIRUS_SCAN:-true}
+    volumes:
+      - ./backend/services/file:/app
+      - /app/node_modules
+      - file-storage:/app/storage
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.13
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # External API Service
+  external-service:
+    build:
+      context: ./backend/services/external
+      dockerfile: Dockerfile
+    container_name: shell-external-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3004
+      REDIS_URL: redis://redis:6379
+      CACHE_TTL: ${CACHE_TTL:-3600}
+      REQUEST_TIMEOUT: ${REQUEST_TIMEOUT:-30000}
+      MAX_RETRIES: ${MAX_RETRIES:-3}
+      CIRCUIT_BREAKER_THRESHOLD: ${CIRCUIT_BREAKER_THRESHOLD:-5}
+      CIRCUIT_BREAKER_TIMEOUT: ${CIRCUIT_BREAKER_TIMEOUT:-60000}
+    volumes:
+      - ./backend/services/external:/app
+      - /app/node_modules
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.14
+    depends_on:
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: shell-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.20
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis Cache & Pub/Sub
+  redis:
+    image: redis:7-alpine
+    container_name: shell-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+      - ./infrastructure/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.21
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Development Database Admin Tool (optional)
+  adminer:
+    image: adminer:4
+    container_name: shell-adminer
+    networks:
+      shell-network:
+        ipv4_address: 172.20.0.30
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+    restart: unless-stopped

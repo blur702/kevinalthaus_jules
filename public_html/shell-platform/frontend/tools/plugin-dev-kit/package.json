@@ -1,0 +1,58 @@
+{
+  "name": "@shell-platform/plugin-dev-kit",
+  "version": "1.0.0",
+  "description": "Plugin Development Kit for Shell Platform",
+  "main": "index.js",
+  "bin": {
+    "shell-plugin": "./cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.js"
+  },
+  "keywords": [
+    "shell-platform",
+    "plugin",
+    "development",
+    "cli",
+    "micro-frontend"
+  ],
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "inquirer": "^9.2.12",
+    "fs-extra": "^11.1.1",
+    "semver": "^7.5.4",
+    "ora": "^7.0.1",
+    "execa": "^8.0.1",
+    "handlebars": "^4.7.8",
+    "joi": "^17.11.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/semver": "^7.5.6",
+    "@types/handlebars": "^4.1.0",
+    "typescript": "^5.2.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "cli",
+    "README.md"
+  ]
+}

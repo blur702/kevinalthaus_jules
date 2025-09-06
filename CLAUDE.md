@@ -232,3 +232,4 @@ For detailed information about any specific subagent, refer to the corresponding
 ---
 
 This blueprint serves as the single source of truth for development in this repository. All development must adhere to these guidelines and utilize the appropriate subagents for optimal results.
+- always test using https://kevinalthaus.com

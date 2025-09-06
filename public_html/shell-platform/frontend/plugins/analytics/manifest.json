@@ -1,0 +1,100 @@
+{
+  "id": "analytics",
+  "name": "Analytics",
+  "version": "1.0.0",
+  "description": "Analytics and reporting dashboard",
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  
+  "category": "business",
+  "tags": ["analytics", "reports", "metrics"],
+  "icon": "bar-chart",
+  
+  "minShellVersion": "1.0.0",
+  "dependencies": [
+    {
+      "id": "core-dashboard",
+      "version": "1.0.0",
+      "optional": false
+    }
+  ],
+  
+  "permissions": [
+    {
+      "name": "analytics:view",
+      "reason": "View analytics data",
+      "required": true
+    }
+  ],
+  
+  "entryPoints": {
+    "main": "index.js"
+  },
+  
+  "navigation": [
+    {
+      "id": "analytics",
+      "label": "Analytics",
+      "icon": "bar-chart",
+      "path": "/analytics",
+      "position": "main",
+      "priority": 15,
+      "permissions": ["analytics:view"]
+    }
+  ],
+  
+  "routes": [
+    {
+      "path": "/analytics",
+      "component": "AnalyticsPage",
+      "exact": true,
+      "permissions": ["analytics:view"]
+    },
+    {
+      "path": "/analytics/reports",
+      "component": "ReportsPage",
+      "permissions": ["analytics:view"]
+    }
+  ],
+  
+  "requiredServices": [
+    {
+      "name": "analytics",
+      "version": "1.0.0"
+    },
+    {
+      "name": "database",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "widgets": [
+    {
+      "id": "analytics-summary",
+      "name": "Analytics Summary",
+      "component": "AnalyticsSummaryWidget",
+      "zones": ["dashboard"]
+    },
+    {
+      "id": "traffic-chart",
+      "name": "Traffic Chart",
+      "component": "TrafficChartWidget",
+      "zones": ["dashboard", "analytics"]
+    }
+  ],
+  
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/analytics/stats",
+      "handler": "getStats",
+      "permissions": ["analytics:view"]
+    },
+    {
+      "method": "GET",
+      "path": "/api/analytics/reports",
+      "handler": "getReports",
+      "permissions": ["analytics:view"]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "name": "data-service",
+  "version": "1.0.0",
+  "description": "Production-ready Data Service with CRUD operations, multi-tenancy, and advanced features",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only index.ts",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "migration:generate": "typeorm migration:generate",
+    "migration:run": "typeorm migration:run",
+    "migration:revert": "typeorm migration:revert",
+    "schema:sync": "typeorm schema:sync",
+    "schema:drop": "typeorm schema:drop",
+    "seed": "ts-node scripts/seed.ts",
+    "docker:build": "docker build -t data-service .",
+    "docker:run": "docker run -p 3000:3000 data-service"
+  },
+  "keywords": [
+    "data-service",
+    "crud",
+    "rest-api",
+    "typescript",
+    "typeorm",
+    "redis",
+    "postgresql",
+    "multi-tenancy",
+    "caching",
+    "audit-trail"
+  ],
+  "author": "Data Service Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.3",
+    "redis": "^4.6.7",
+    "ioredis": "^5.3.2",
+    "joi": "^17.9.2",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^6.8.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.1",
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.9.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2",
+    "@types/express": "^4.17.17",
+    "@types/cors": "^2.8.13",
+    "@types/compression": "^1.7.2",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/uuid": "^9.0.2",
+    "@types/joi": "^17.2.3",
+    "@types/jest": "^29.5.3",
+    "@types/supertest": "^2.0.12",
+    "typescript": "^5.1.6",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.6.1",
+    "ts-jest": "^29.1.1",
+    "supertest": "^6.3.3",
+    "eslint": "^8.45.0",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "nodemon": "^3.0.1"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "collectCoverageFrom": [
+      "**/*.ts",
+      "!**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/coverage/**",
+      "!jest.config.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testTimeout": 30000,
+    "maxWorkers": 1
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/company/data-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/company/data-service/issues"
+  },
+  "homepage": "https://github.com/company/data-service#readme"
+}

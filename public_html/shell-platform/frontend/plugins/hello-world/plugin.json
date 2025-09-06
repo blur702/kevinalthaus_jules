@@ -1,0 +1,65 @@
+{
+  "id": "hello-world",
+  "name": "Hello World Plugin",
+  "version": "1.0.0",
+  "description": "A simple plugin that displays Hello World in the main content area",
+  "author": "Shell Platform Demo",
+  "license": "MIT",
+  "category": "demo",
+  
+  "hooks": {
+    "menu": [
+      {
+        "id": "hello",
+        "label": "Hello World",
+        "icon": "waving_hand",
+        "path": "/hello-world",
+        "position": 500
+      }
+    ],
+    "routes": [
+      {
+        "path": "/hello-world",
+        "component": "HelloWorldView",
+        "exact": true
+      }
+    ],
+    "actions": [
+      "hello.loaded"
+    ],
+    "filters": [
+      "content.render"
+    ]
+  },
+  
+  "services": [
+    "menu",
+    "router"
+  ],
+  
+  "permissions": [],
+  
+  "dependencies": {
+    "plugins": [],
+    "npm": {}
+  },
+  
+  "settings": {
+    "greeting": {
+      "type": "string",
+      "default": "Hello World!",
+      "label": "Greeting Message"
+    },
+    "showTime": {
+      "type": "boolean",
+      "default": true,
+      "label": "Show Current Time"
+    },
+    "textColor": {
+      "type": "select",
+      "options": ["blue", "green", "red", "purple"],
+      "default": "blue",
+      "label": "Text Color"
+    }
+  }
+}

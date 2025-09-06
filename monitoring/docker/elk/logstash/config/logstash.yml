@@ -1,0 +1,27 @@
+# Logstash Configuration
+http.host: "0.0.0.0"
+path.config: /usr/share/logstash/pipeline
+path.logs: /usr/share/logstash/logs
+
+# Pipeline settings
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# Queue settings
+queue.type: persisted
+path.queue: /usr/share/logstash/data/queue
+
+# Dead Letter Queue settings
+dead_letter_queue.enable: true
+path.dead_letter_queue: /usr/share/logstash/data/dead_letter_queue
+
+# Config reload settings
+config.reload.automatic: true
+config.reload.interval: 3s
+
+# Monitoring settings (using only one type to avoid conflict)
+monitoring.enabled: false
+
+# Log level
+log.level: info

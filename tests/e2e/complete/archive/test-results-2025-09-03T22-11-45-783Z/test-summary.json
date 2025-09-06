@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-09-03T22:11:45.775Z",
+  "totalTests": 0,
+  "passedTests": 0,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "duration": 436.93000000000006,
+  "projects": {},
+  "categories": {
+    "core": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "auth": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "api": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "plugins": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "visual": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "performance": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "security": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "accessibility": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    }
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "id": "core-user-management",
+  "name": "User Management",
+  "version": "1.0.0",
+  "description": "User authentication, authorization, and management",
+  "author": "Shell Platform Team",
+  "license": "MIT",
+  
+  "category": "core",
+  "tags": ["core", "users", "authentication", "security"],
+  "icon": "users",
+  
+  "minShellVersion": "1.0.0",
+  "dependencies": [],
+  
+  "permissions": [
+    {
+      "name": "users:manage",
+      "reason": "Manage user accounts",
+      "required": true
+    }
+  ],
+  
+  "entryPoints": {
+    "main": "index.js",
+    "settings": "settings.js"
+  },
+  
+  "navigation": [
+    {
+      "id": "users",
+      "label": "Users",
+      "icon": "users",
+      "path": "/users",
+      "position": "main",
+      "priority": 20,
+      "permissions": ["users:read"]
+    },
+    {
+      "id": "profile",
+      "label": "Profile",
+      "icon": "user",
+      "path": "/profile",
+      "position": "user",
+      "priority": 1
+    }
+  ],
+  
+  "routes": [
+    {
+      "path": "/users",
+      "component": "UsersPage",
+      "exact": true,
+      "permissions": ["users:read"]
+    },
+    {
+      "path": "/users/:id",
+      "component": "UserDetailPage",
+      "permissions": ["users:read"]
+    },
+    {
+      "path": "/profile",
+      "component": "ProfilePage"
+    },
+    {
+      "path": "/login",
+      "component": "LoginPage",
+      "layout": "minimal"
+    },
+    {
+      "path": "/register",
+      "component": "RegisterPage",
+      "layout": "minimal"
+    }
+  ],
+  
+  "requiredServices": [
+    {
+      "name": "authentication",
+      "version": "1.0.0"
+    },
+    {
+      "name": "database",
+      "version": "1.0.0"
+    },
+    {
+      "name": "notification",
+      "version": "1.0.0"
+    },
+    {
+      "name": "permission",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "database": {
+    "tables": [
+      {
+        "name": "users",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true
+          },
+          {
+            "name": "email",
+            "type": "varchar(255)",
+            "unique": true,
+            "nullable": false
+          },
+          {
+            "name": "password_hash",
+            "type": "varchar(255)",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "varchar(255)"
+          },
+          {
+            "name": "avatar",
+            "type": "text"
+          },
+          {
+            "name": "status",
+            "type": "varchar(50)",
+            "default": "'active'"
+          },
+          {
+            "name": "email_verified",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp",
+            "default": "now()"
+          },
+          {
+            "name": "updated_at",
+            "type": "timestamp",
+            "default": "now()"
+          }
+        ]
+      },
+      {
+        "name": "roles",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid",
+            "primary": true
+          },
+          {
+            "name": "name",
+            "type": "varchar(100)",
+            "unique": true
+          },
+          {
+            "name": "description",
+            "type": "text"
+          },
+          {
+            "name": "permissions",
+            "type": "jsonb"
+          }
+        ]
+      },
+      {
+        "name": "user_roles",
+        "columns": [
+          {
+            "name": "user_id",
+            "type": "uuid"
+          },
+          {
+            "name": "role_id",
+            "type": "uuid"
+          }
+        ],
+        "indexes": [
+          {
+            "name": "idx_user_roles",
+            "columns": ["user_id", "role_id"],
+            "unique": true
+          }
+        ]
+      }
+    ]
+  },
+  
+  "hooks": [
+    {
+      "name": "filter_user_capabilities",
+      "handler": "filterUserCapabilities"
+    },
+    {
+      "name": "action_user_registered",
+      "handler": "onUserRegistered"
+    },
+    {
+      "name": "action_user_login",
+      "handler": "onUserLogin"
+    }
+  ],
+  
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/users",
+      "handler": "getUsers",
+      "permissions": ["users:read"]
+    },
+    {
+      "method": "POST",
+      "path": "/api/users",
+      "handler": "createUser",
+      "permissions": ["users:create"]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/users/:id",
+      "handler": "updateUser",
+      "permissions": ["users:update"]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/users/:id",
+      "handler": "deleteUser",
+      "permissions": ["users:delete"]
+    }
+  ]
+}
